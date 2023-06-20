@@ -1,0 +1,104 @@
+package podman
+
+import (
+	"flag"
+	"os"
+	"testing"
+
+	"github.com/onsi/ginkgo/v2"
+	"github.com/onsi/ginkgo/v2/reporters"
+	"github.com/onsi/ginkgo/v2/types"
+	"github.com/onsi/gomega"
+	"github.com/spf13/pflag"
+
+	podmanDesktop "github.com/adrianriobo/podman-desktop-e2e/test/e2e/app"
+)
+
+type TestContextType struct {
+	UserPassword        string
+	JunitReportFilename string
+	AppPath             string
+}
+
+var TestContext TestContextType
+
+func TestMain(m *testing.M) {
+	RegisterCommonFlags(flag.CommandLine)
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	pflag.Parse()
+	AfterReadingAllFlags()
+	os.Exit(m.Run())
+}
+
+func TestE2E(t *testing.T) {
+	gomega.RegisterFailHandler(ginkgo.Fail)
+	suiteConfig, reporterConfig := CreateGinkgoConfig()
+	ginkgo.RunSpecs(t, "E2EPodman suite", suiteConfig, reporterConfig)
+}
+
+func CreateGinkgoConfig() (types.SuiteConfig, types.ReporterConfig) {
+	// fetch the current config
+	suiteConfig, reporterConfig := ginkgo.GinkgoConfiguration()
+	// Turn on EmitSpecProgress to get spec progress (especially on interrupt)
+	suiteConfig.EmitSpecProgress = true
+	// Randomize specs as well as suites
+	suiteConfig.RandomizeAllSpecs = true
+	// Turn on verbose by default to get spec names
+	reporterConfig.Verbose = true
+	// Disable skipped tests unless they are explicitly requested.
+	if len(suiteConfig.FocusStrings) == 0 && len(suiteConfig.SkipStrings) == 0 {
+		suiteConfig.SkipStrings = []string{`\[Flaky\]|\[Feature:.+\]`}
+	}
+	return suiteConfig, reporterConfig
+}
+
+func RegisterCommonFlags(flags *flag.FlagSet) {
+	flags.StringVar(&TestContext.AppPath, "pd-path", "", "Set the user password to be used within the tests.")
+	flags.StringVar(&TestContext.UserPassword, "user-password", "", "Set the user password to be used within the tests.")
+	flags.StringVar(&TestContext.JunitReportFilename, "junit-filename", "", "Set the filename for the junit report.")
+}
+
+func AfterReadingAllFlags() {
+	ginkgo.ReportAfterSuite("Podman Desktop e2e JUnit report", writeJUnitReport)
+}
+
+// INFO Inspired by https://github.com/kubernetes/kubernetes/blob/07315d10b3718973e5ebcc61cbf0fba8a6ec58a9/test/e2e/framework/test_context.go#LL535C1-L573C2
+func writeJUnitReport(report ginkgo.Report) {
+	filename := TestContext.JunitReportFilename
+	if len(filename) == 0 {
+		filename = generateDefaultJunitReportName()
+	}
+	reporters.GenerateJUnitReportWithConfig(report,
+		filename,
+		reporters.JunitReportConfig{
+			OmitFailureMessageAttr:    true,
+			OmitCapturedStdOutErr:     true,
+			OmitTimelinesForSpecState: types.SpecStatePassed,
+		})
+}
+
+// TODO add timestamp
+func generateDefaultJunitReportName() string {
+	return "junit_report.xml"
+}
+
+var _ = ginkgo.BeforeSuite(func() {
+	// Cleanup system ref to PodmanDesktop to ensure fresh env
+	podmanDesktop.Cleanup()
+	// gomega.Expect(err).NotTo(gomega.HaveOccurred())
+	// Open the app with param from exec
+	err := podmanDesktop.Open(TestContext.AppPath)
+	gomega.Expect(err).NotTo(gomega.HaveOccurred())
+	// First run will show wellcome page
+	err = podmanDesktop.DisableTelemetryOnWellcomePage()
+	gomega.Expect(err).NotTo(gomega.HaveOccurred())
+	// Go to Podman
+	err = podmanDesktop.GoToPodman()
+	gomega.Expect(err).NotTo(gomega.HaveOccurred())
+
+})
+
+var _ = ginkgo.AfterSuite(func() {
+	// err := podmanDesktop.Close()
+	// gomega.Expect(err).NotTo(gomega.HaveOccurred())
+})
