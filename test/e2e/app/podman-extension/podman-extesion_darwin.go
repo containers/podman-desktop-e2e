@@ -68,7 +68,7 @@ func installer(userPassword string) error {
 		return fmt.Errorf("error installing Podman: %v", err)
 	}
 	delay.Delay(delay.SMALL)
-	pdInstallerSec := autoApp.LoadForefrontApp()
+	pdInstallerSec, err := autoApp.LoadForefrontApp()
 	if err != nil {
 		return fmt.Errorf("error installing Podman: %v", err)
 	}
