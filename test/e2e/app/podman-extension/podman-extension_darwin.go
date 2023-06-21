@@ -32,8 +32,7 @@ func cleanup() error {
 func installer(userPassword string) error {
 	delay.Delay(delay.XLONG)
 	pInstaller, err := autoApp.LoadForefrontApp()
-	fmt.Printf("got on pInstaller %v", *pInstaller)
-	pInstaller.Print("", false)
+	fmt.Print("after first load")
 	if err != nil {
 		return fmt.Errorf("error installing Podman: %v", err)
 	}
@@ -41,9 +40,10 @@ func installer(userPassword string) error {
 	if err != nil {
 		return fmt.Errorf("error installing Podman: %v", err)
 	}
+	fmt.Print("after first continue")
 	delay.Delay(delay.SMALL)
-
 	pInstaller, err = pInstaller.Reload()
+	fmt.Print("after first reload")
 	if err != nil {
 		return fmt.Errorf("error installing Podman: %v", err)
 	}
@@ -51,6 +51,7 @@ func installer(userPassword string) error {
 	if err != nil {
 		return fmt.Errorf("error installing Podman: %v", err)
 	}
+	fmt.Print("after second continue")
 	delay.Delay(delay.SMALL)
 	pInstaller, err = pInstaller.Reload()
 	if err != nil {
