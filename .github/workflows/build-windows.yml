@@ -1,4 +1,4 @@
-name: build darwin
+name: build windows
 
 on:
   push:
@@ -14,9 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macOS-12]
+        os: [windows-2019]
         go: [1.19]
-        arch: [amd64, arm64]
         
     steps:
       - name: Check out repository code
@@ -27,11 +26,11 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
-      - name: build darwin
-        run: ARCH=${{ matrix.arch }} make build-darwin
+      - name: build windows
+        run: make build-windows
 
       - name: upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: darwin-${{ matrix.arch }}
-          path: "./out/darwin-${{ matrix.arch }}/pd-e2e"
+          name: windows-amd64
+          path: "./out/windows-amd64/pd-e2e.exe"
