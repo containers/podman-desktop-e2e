@@ -13,6 +13,9 @@ const (
 	PODMAN_INSTALLER_AGREE    = "Agree"
 	PODMAN_INSTALLER_INSTALL  = "Install"
 	PODMAN_INSTALLER_CLOSE    = "Close"
+
+	installerBundleID    = "com.apple.installer"
+	installerPodmanTitle = "Install Podman"
 )
 
 func cleanup() error {
@@ -32,7 +35,7 @@ func cleanup() error {
 
 func installer(userPassword string) error {
 	delay.Delay(delay.XLONG)
-	pInstaller, err := autoApp.LoadForefrontApp()
+	pInstaller, err := autoApp.LoadAppByTypeAndTitle(installerBundleID, installerPodmanTitle)
 	logging.InitLogrus("", "", "")
 	pInstaller.Print("", false)
 	fmt.Print("after first load")

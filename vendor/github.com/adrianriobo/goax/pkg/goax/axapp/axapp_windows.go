@@ -20,3 +20,7 @@ func osGetAXElement(element *AXElement) (*AXElement, error) {
 	}
 	return GetAXElement(rootAXElement, nil)
 }
+
+func osGetAXElementByTypeAndTitle(appType, appTitle string) (*AXElement, error) {
+	return nil, fmt.Errorf("not implemented yet")
+}

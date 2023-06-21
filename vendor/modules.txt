@@ -1,4 +1,4 @@
-# github.com/adrianriobo/goax v0.0.0-20230621142301-ec53c6288603
+# github.com/adrianriobo/goax v0.0.0-20230621193011-7f4632cce7a4
 ## explicit; go 1.19
 github.com/adrianriobo/goax/pkg/goax/app
 github.com/adrianriobo/goax/pkg/goax/app/api
