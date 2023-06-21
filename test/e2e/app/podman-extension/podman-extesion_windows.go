@@ -7,6 +7,11 @@ import (
 	"github.com/adrianriobo/goax/pkg/util/delay"
 )
 
+const (
+	PODMAN_INSTALLER_INSTALL = "Install"
+	PODMAN_INSTALLER_CLOSE   = "Close"
+)
+
 func cleanup() error {
 	ps := powershell.New()
 	// Start-Process powershell -verb runas -ArgumentList "Remove-Item 'C:\Program Files\RedHat' -Force"
