@@ -24,7 +24,7 @@ $(BUILD_DIR)/windows-amd64/pd-e2e.exe: $(SOURCES)
 build-darwin: clean $(BUILD_DIR)/darwin-${ARCH}/pd-e2e
 
 $(BUILD_DIR)/darwin-${ARCH}/pd-e2e:
-	CC=clang GOARCH=${ARCH} GOOS=darwin go test -v test/e2e/e2e_podman/suite_test.go test/e2e/e2e_podman/podman-extension_test.go \
+	CGO_ENABLED=1 CC=clang GOARCH=${ARCH} GOOS=darwin go test -v test/e2e/e2e_podman/suite_test.go test/e2e/e2e_podman/podman-extension_test.go \
 		-c -o $(BUILD_DIR)/darwin-${ARCH}/pd-e2e 
     
 .PHONY: vendor
