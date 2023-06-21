@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	autoApp "github.com/adrianriobo/goax/pkg/goax/app"
+	"github.com/adrianriobo/goax/pkg/util/delay"
 	"github.com/adrianriobo/goax/pkg/util/logging"
 	podmanExtension "github.com/adrianriobo/podman-desktop-e2e/test/e2e/app/podman-extension"
 )
@@ -21,7 +22,10 @@ func Cleanup() error {
 }
 
 func Open(execPath string) error {
-	return autoApp.Open(execPath)
+	err := autoApp.Open(execPath)
+	// We open remotely so we wait for a bit
+	delay.Delay(delay.LONG)
+	return err
 }
 
 func Close() error {
