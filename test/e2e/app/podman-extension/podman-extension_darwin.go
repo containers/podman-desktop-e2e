@@ -35,6 +35,7 @@ func cleanup() error {
 
 func installer(userPassword string) error {
 	delay.Delay(delay.XLONG)
+	fmt.Print("with title")
 	pInstaller, err := autoApp.LoadAppByTypeAndTitle(installerBundleID, installerPodmanTitle)
 	logging.InitLogrus("", "", "")
 	pInstaller.Print("", false)

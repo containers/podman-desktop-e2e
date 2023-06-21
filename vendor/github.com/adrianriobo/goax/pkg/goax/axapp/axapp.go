@@ -38,7 +38,7 @@ func GetAXApp() (*AXApp, error) {
 // Get the frontground app from the system
 // and the hirarchy of accessible elements
 func GetAXAppByTypeAndTitle(appType, appTitle string) (*AXApp, error) {
-	ref, err := osGetAXElement(nil)
+	ref, err := osGetAXElementByTypeAndTitle(appType, appTitle)
 	if err != nil {
 		return nil, err
 	}
