@@ -1,5 +1,5 @@
-github.com/adrianriobo/goax v0.0.0-20230621085837-871b87ac00be h1:6p/jYg8Y57G4N9h11C1GQuOP8Fa5jSsRnQOZpoiBnIg=
-github.com/adrianriobo/goax v0.0.0-20230621085837-871b87ac00be/go.mod h1:yOPIPPkjny6EixjEy3bLiUKDGeKqsgYX74JpJtxSHkM=
+github.com/adrianriobo/goax v0.0.0-20230621142301-ec53c6288603 h1:rZwam4DobY3F68e09/nunJdVGsIvBEmYRQwGgZme/qw=
+github.com/adrianriobo/goax v0.0.0-20230621142301-ec53c6288603/go.mod h1:yOPIPPkjny6EixjEy3bLiUKDGeKqsgYX74JpJtxSHkM=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
