@@ -2,6 +2,7 @@ package podmanextension
 
 import (
 	"fmt"
+	"github.com/adrianriobo/goax/pkg/util/delay"
 	"os/exec"
 )
 
@@ -84,8 +85,4 @@ func installer(userPassword string) error {
 		return fmt.Errorf("error installing Podman: %v", err)
 	}
 	return nil
-}
-
-func click(element string) {
-
 }
