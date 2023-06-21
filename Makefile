@@ -17,7 +17,7 @@ build:
 cross: clean $(BUILD_DIR)/windows-amd64/pd-e2e.exe
 
 .PHONY: build-windows
-build-darwin: clean $(BUILD_DIR)/windows-amd64/pd-e2e.exe
+build-windows: clean $(BUILD_DIR)/windows-amd64/pd-e2e.exe
 
 $(BUILD_DIR)/windows-amd64/pd-e2e.exe: $(SOURCES)
 	CC=clang GOARCH=amd64 GOOS=windows go test -v test/e2e/e2e_podman/suite_test.go test/e2e/e2e_podman/podman-extension_test.go \

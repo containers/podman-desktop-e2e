@@ -34,3 +34,4 @@ jobs:
         with:
           name: windows-amd64
           path: "./out/windows-amd64/pd-e2e.exe"
+          
