@@ -30,7 +30,7 @@ jobs:
           go-version: ${{ matrix.go }}
 
       - name: build darwin
-        run: ARCH=${{ matrix.arch }} build-darwin
+        run: ARCH=${{ matrix.arch }} make build-darwin
 
       - name: upload artifact
         uses: actions/upload-artifact@v3
