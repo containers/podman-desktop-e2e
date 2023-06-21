@@ -32,7 +32,7 @@ func cleanup() error {
 func installer(userPassword string) error {
 	delay.Delay(delay.XLONG)
 	pInstaller, err := autoApp.LoadForefrontApp()
-	pInstaller.Print()
+	pInstaller.Print("", false)
 	if err != nil {
 		return fmt.Errorf("error installing Podman: %v", err)
 	}
