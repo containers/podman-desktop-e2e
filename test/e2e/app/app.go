@@ -4,14 +4,20 @@ import (
 	"fmt"
 
 	autoApp "github.com/adrianriobo/goax/pkg/goax/app"
+	"github.com/adrianriobo/goax/pkg/util/logging"
 	podmanExtension "github.com/adrianriobo/podman-desktop-e2e/test/e2e/app/podman-extension"
 )
 
 func Cleanup() error {
 	if err := cleanup(); err != nil {
+		logging.Errorf("error cleaning up system from podman: %v", err)
 		return err
 	}
-	return podmanExtension.Cleanup()
+	if err := podmanExtension.Cleanup(); err != nil {
+		logging.Errorf("error cleaning up system from podman extension: %v", err)
+		return err
+	}
+	return nil
 }
 
 func Open(execPath string) error {
