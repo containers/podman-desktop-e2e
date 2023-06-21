@@ -2,6 +2,7 @@ package podmanextension
 
 import (
 	"fmt"
+	autoApp "github.com/adrianriobo/goax/pkg/goax/app"
 	"github.com/adrianriobo/goax/pkg/util/delay"
 	"os/exec"
 )
