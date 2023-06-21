@@ -8,14 +8,16 @@ import (
 func cleanup() error {
 	// rmConfigContainers := "rm -rf $HOME/.config/containers"
 	// cmd := exec.Command(rmConfigContainers...)
-	cmd := exec.Command("rm", "-rf", "${HOME}/.config/containers")
+	// cmd := exec.Command("rm", "-rf", "${HOME}/.config/containers")
+	exec.Command("/bin/sh", "-c", "rm -rf ${HOME}/.config/containers")
 	err := cmd.Start()
 	if err != nil {
 		return err
 	}
 	// rmShareContainers := "rm -rf $HOME/.local/share/containers"
 	// cmd = exec.Command(rmShareContainers...)
-	cmd = exec.Command("rm", "-rf", "${HOME}/.local/share/containers")
+	// cmd = exec.Command("rm", "-rf", "${HOME}/.local/share/containers")
+	exec.Command("/bin/sh", "-c", "rm -rf ${HOME}/.local/share/containers")
 	err = cmd.Start()
 	if err != nil {
 		return err
