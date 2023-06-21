@@ -1,12 +1,11 @@
 package app
 
-// import (
-// 	podmanExtension "github.com/adrianriobo/podman-desktop-e2e/test/e2e/app/podman-extension"
-
-// )
-
-import "fmt"
+import (
+	"os/exec"
+)
 
 func cleanup() error {
-	return fmt.Errorf("not implemented yet")
+	rmSharePodmanDesktop := "rm -rf $HOME/.local/share/containers/podman-desktop"
+	cmd = exec.Command(rmSharePodmanDesktop...)
+	return cmd.Start()
 }

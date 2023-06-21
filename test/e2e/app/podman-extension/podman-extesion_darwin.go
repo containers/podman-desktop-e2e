@@ -1,9 +1,27 @@
 package podmanextension
 
-import "fmt"
+import (
+	"fmt"
+	"os/exec"
+)
 
 func cleanup() error {
-	return fmt.Errorf("not implemented yet")
+	rmConfigContainers := "rm -rf $HOME/.config/containers"
+	// cmd := exec.Command("rm", "-rf", "$HOME\\.config\\containers")
+	cmd := exec.Command(rmConfigContainers...)
+	err := cmd.Start()
+	if err != nil {
+		return err
+	}
+	rmShareContainers := "rm -rf $HOME/.local/share/containers"
+	cmd = exec.Command(rmShareContainers...)
+	err = cmd.Start()
+	if err != nil {
+		return err
+	}
+	rmPodman := "sudo rm -rf /opt/podman"
+	cmd = exec.Command(rmPodman...)
+	return cmd.Start()
 }
 
 func installer(userPassword string) error {
