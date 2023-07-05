@@ -1,0 +1,149 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+    tags:        
+      - '*'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-darwin:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macOS-12]
+        go: [1.19]
+        arch: [amd64, arm64]
+        
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: build darwin
+      run: ARCH=${{ matrix.arch }} make build-darwin
+
+    - name: upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: darwin-${{ matrix.arch }}
+        path: "./out/darwin-${{ matrix.arch }}/pd-e2e"
+
+  build-windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019]
+        go: [1.19]
+        arch: [amd64]
+        
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: build windows
+      run:  $env:ARCH='${{ matrix.arch }}'; make build-windows
+
+    - name: upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-${{ matrix.arch }}
+        path: "./out/windows-${{ matrix.arch }}/pd-e2e.exe"
+
+  oci-build-windows:
+    strategy:
+      matrix:
+        os: [windows]
+        arch: [amd64]
+    needs: 
+      - build-windows
+    name: oci-build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Create binary folder path
+      shell: bash
+      run: mkdir -p oci/bin/${{ matrix.os }}-${{ matrix.arch }}
+
+    - name: Copy binary
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ matrix.os }}-${{ matrix.arch }}
+        path: oci/bin/${{ matrix.os }}-${{ matrix.arch }}
+
+    - name: Check
+      shell: bash
+      run: ls oci/bin/${{ matrix.os }}-${{ matrix.arch }}
+
+    - name: Build
+      shell: bash
+      run: OS=${{ matrix.os }} ARCH=${{ matrix.arch }} E2E_BINARY=pd-e2e.exe make oci-build
+
+    - name: Log in to quay.io Registry
+      uses: redhat-actions/podman-login@v1
+      with:
+        registry: quay.io
+        username: ${{ secrets.QUAY_IO_USERNAME }}
+        password: ${{ secrets.QUAY_IO_PASSWORD }}
+
+    - name: Push image
+      shell: bash
+      run: OS=${{ matrix.os }} ARCH=${{ matrix.arch }} make oci-push
+
+  oci-build-darwin:
+    strategy:
+      matrix:
+        os: [darwin]
+        arch: [amd64, arm64]
+    needs: 
+      - build-darwin
+    name: oci-build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Create binary folder path
+      shell: bash
+      run: mkdir -p oci/bin/${{ matrix.os }}-${{ matrix.arch }}
+
+    - name: Copy binary
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ matrix.os }}-${{ matrix.arch }}
+        path: oci/bin/${{ matrix.os }}-${{ matrix.arch }}
+
+    - name: Check
+      shell: bash
+      run: ls oci/bin/${{ matrix.os }}-${{ matrix.arch }}
+
+    - name: Build
+      shell: bash
+      run: OS=${{ matrix.os }} ARCH=${{ matrix.arch }} E2E_BINARY=pd-e2e make oci-build
+
+    - name: Log in to quay.io Registry
+      uses: redhat-actions/podman-login@v1
+      with:
+        registry: quay.io
+        username: ${{ secrets.QUAY_IO_USERNAME }}
+        password: ${{ secrets.QUAY_IO_PASSWORD }}
+
+    - name: Push image
+      shell: bash
+      run: OS=${{ matrix.os }} ARCH=${{ matrix.arch }} make oci-push
+        

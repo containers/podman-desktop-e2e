@@ -1,4 +1,11 @@
 
+PODMAN_DESKTOP_VERSION ?= 1.1.0
+CONTAINER_MANAGER ?= podman
+
+# Image URL to use all building/pushing image targets
+IMG ?= quay.io/rhqp/podman-desktop-e2e:v${PODMAN_DESKTOP_VERSION}
+E2E_BINARY ?= pd-e2e
+
 BUILD_DIR ?= out
 ARCH ?= amd64
 
@@ -17,11 +24,11 @@ build:
 cross: clean $(BUILD_DIR)/windows-amd64/pd-e2e.exe
 
 .PHONY: build-windows
-build-windows: clean $(BUILD_DIR)/windows-amd64/pd-e2e.exe
+build-windows: clean $(BUILD_DIR)/windows-${ARCH}/pd-e2e.exe
 
-$(BUILD_DIR)/windows-amd64/pd-e2e.exe: $(SOURCES)
-	CC=clang GOARCH=amd64 GOOS=windows go test -v test/e2e/e2e_podman/suite_test.go test/e2e/e2e_podman/podman-extension_test.go \
-		-c -o $(BUILD_DIR)/windows-amd64/pd-e2e.exe 
+$(BUILD_DIR)/windows-${ARCH}/pd-e2e.exe: $(SOURCES)
+	CC=clang GOARCH=${ARCH} GOOS=windows go test -v test/e2e/e2e_podman/suite_test.go test/e2e/e2e_podman/podman-extension_test.go \
+		-c -o $(BUILD_DIR)/windows-${ARCH}/pd-e2e.exe 
 
 .PHONY: build-darwin
 build-darwin: clean $(BUILD_DIR)/darwin-${ARCH}/pd-e2e
@@ -34,3 +41,13 @@ $(BUILD_DIR)/darwin-${ARCH}/pd-e2e:
 vendor:
 	go mod tidy
 	go mod vendor
+
+# Build the container image
+.PHONY: oci-build
+oci-build: 
+	${CONTAINER_MANAGER} build -t ${IMG}-${OS}-${ARCH} -f oci/Containerfile --build-arg=OS=${OS} --build-arg=ARCH=${ARCH} --build-arg=E2E_BINARY=${E2E_BINARY} oci
+
+# Build the container image
+.PHONY: oci-push
+oci-push: 
+	${CONTAINER_MANAGER} push ${IMG}-${OS}-${ARCH}
