@@ -1,0 +1,18 @@
+FROM quay.io/rhqp/deliverest:v0.0.2
+
+LABEL org.opencontainers.image.authors="Adrian Riobo<ariobolo@redhat.com>"
+
+ARG OS 
+ARG ARCH
+ARG E2E_BINARY
+
+ENV ASSETS_FOLDER=/opt/podman-desktop-e2e \
+    OS=${OS} \
+    ARCH=${ARCH}
+
+# We can not cross compile for darwin due to goax binding on AX api
+# So we need to handle build outside and ensure binaries will be
+# externally added to the bin folder inside oci
+# pd-e2e should +x
+COPY /bin/${OS}-${ARCH}/${E2E_BINARY} ${ASSETS_FOLDER}/${E2E_BINARY}
+COPY /lib/${OS}/* ${ASSETS_FOLDER}/
