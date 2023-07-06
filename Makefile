@@ -6,11 +6,19 @@ CONTAINER_MANAGER ?= podman
 IMG ?= quay.io/rhqp/podman-desktop-e2e:v${PODMAN_DESKTOP_VERSION}
 E2E_BINARY ?= pd-e2e
 
+# Tekton task
+TKN_TASK_VERSION ?= 0.1
+TKN_IMG ?= quay.io/rhqp/podman-desktop-e2e-tkn:v${TKN_TASK_VERSION}
+
+
 BUILD_DIR ?= out
 ARCH ?= amd64
 
 # https://golang.org/cmd/link/
 LDFLAGS := $(VERSION_VARIABLES) -extldflags='-static' ${GO_EXTRA_LDFLAGS}
+
+TOOLS_DIR := tools
+include tools/tools.mk
 
 .PHONY: clean 
 clean: 
@@ -51,3 +59,8 @@ oci-build:
 .PHONY: oci-push
 oci-push: 
 	${CONTAINER_MANAGER} push ${IMG}-${OS}-${ARCH}
+
+# Create tekton task bundle
+.PHONY: tkn-push
+tkn-push: install-out-of-tree-tools
+	$(TOOLS_BINDIR)/tkn bundle push $(TKN_IMG) -f tkn/task.yaml
