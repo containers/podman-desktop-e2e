@@ -73,7 +73,7 @@ spec:
       TARGET_HOST_KEY_PATH=$(workspaces.pipelines-data.path)/$(params.workspace-resources-path)/$(params.key)
       chmod 600 ${TARGET_HOST_KEY_PATH}
       TARGET_FOLDER=podman-desktop-e2e
-      TARGET_RESULTS=podman-backend-e2e-results.xml
+      TARGET_RESULTS=$(params.junit-filename)
       OUTPUT_FOLDER=$(workspaces.pipelines-data.path)/$(params.workspace-resources-path)/$(params.worspace-qe-subpath)
       mkdir -p "${OUTPUT_FOLDER}"
       
