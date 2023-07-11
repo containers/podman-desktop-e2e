@@ -1,61 +1,55 @@
 # podman-desktop-e2e
 
-PoC for podman desktop e2e  
+This project define a set of e2e tests around [podman desktop](https://github.com/containers/podman-desktop), this is a complementary set of e2e tests for those
+user stories which requires interaction beyond the podman desktop app itself with some third party apps (i.e installers from extensions).
 
-## Running remotely
+## Overview
 
-podman-dektop-e2e binary is wrapped on a [container](https://github.com/adrianriobo/deliverest) which is responsible for copying it to the target host,
-running the tests and got back the results.
+This project is intended for running without any extra dependecy, tests are self contained into a binary wich then will be run on a target host where podman dektop
+should be accessible. To accomplish this dependent-less runtime the project uses [goax](https://github.com/adrianriobo/goax) which uses OS native accessibility APIs
+to interact with UX elements (not only the ones from podman desktop but any other UX element rendered by the OS).
 
-Following snippet shows how this can be used, this sample was intended to be run from a folder holding the files with information for the target host:
+Tests specs are defined with [ginkgo testing framework](https://onsi.github.io/ginkgo/), and as mentioned before UX interactions / checks use goax.  
+
+## Build
+
+Currently the main two target OSs for the projects are Windows and MacOS: windows binary can be built on any platform, for building MacOS binary we need to build
+the binary on a MacOS machine (to ensure compatibilty it is recommended to build it on MacOS 12 Monterrey).
+
+Following commands will build the binary (`windows arm64 not supported`):  
 
 ```bash
-# Darwin sample run
-PD_E2E_V=1.1.0
-podman run --rm -d --name pd-e2e-darwin \
-    -e TARGET_HOST=$(cat host) \
-    -e TARGET_HOST_USERNAME=$(cat username) \
-    -e TARGET_HOST_KEY_PATH=/data/id_rsa \
-    -e TARGET_FOLDER=pd-e2e \
-    -e TARGET_RESULTS=pd-e2e-results.xml \
-    -e TARGET_CLEANUP=true \
-    -e OUTPUT_FOLDER=/data \
-    -e DEBUG=true \
-    -v $PWD:/data:z \
-    quay.io/rhqp/podman-desktop-e2e:v${PD_E2E_V}-darwin-amd64 \
-        USER_PASSWORD="$(cat userpassword)" \
-        TARGET_FOLDER=pd-e2e \
-        DEBUG=true \
-        PD_PATH="/Users/$(cat username)/PodmanDesktop" \
-        JUNIT_RESULTS_FILENAME=pd-e2e-results.xml \
-        pd-e2e/run.sh
+# Build for mac amd64 (This need to be run on a MacOS)
+ARCH=amd64 make build-darwin
+# Binary will be located at
+out/darwin-amd64/pd-e2e
 
-# Execution logs
-podman logs -f pd-e2e-darwin
+# Build for mac arm64 (This need to be run on a MacOS)
+ARCH=arm64 make build-darwin
+# Binary will be located at
+out/darwin-arm64/pd-e2e
 
-# Check results
-cat pd-e2e-results.xml
+# Build for windows amd64 
+ARCH=amd64 make build-windows
+# Binary will be located at
+out/windows-amd64/pd-e2e.exe
 
-# Windows sample run
-PD_E2E_V=1.1.0
-podman run --rm -d --name pd-e2e-windows \
-    -e TARGET_HOST=$(cat host) \
-    -e TARGET_HOST_USERNAME=$(cat username) \
-    -e TARGET_HOST_KEY_PATH=/data/id_rsa \
-    -e TARGET_FOLDER=pd-e2e \
-    -e TARGET_RESULTS=pd-e2e-results.xml \
-    -e OUTPUT_FOLDER=/data \
-    -e DEBUG=true \
-    -v $PWD:/data:z \
-    quay.io/rhqp/podman-desktop-e2e:v${PD_E2E_V}-windows-amd64  \
-        pd-e2e/run.ps1 \
-            -targetFolder pd-e2e \
-            -pdPath /Users/crcqe \
-            -junitResultsFilename pd-e2e-results.xml 
-
-# Execution logs
-podman logs -f pd-e2e-windows
-
-# Check results
-cat pd-e2e-results.xml
 ```
+
+## Run
+
+The binary can be executed locally on the target hosts, it requires some parameters:
+
+* pd-path: Set the path where the podman desktop executable is located.
+* user-password: Set the password for the currrent user (this is needed for running installers which require elevated permissions).
+* junit-filename: This is an optional parameter in case we want to set the name of the junit resulting file (Default: junit_report.xml).
+
+Following command will run the tests on a windows host:  
+
+```bash
+pd-e2e.exe --pd-path /Users/rhqp/pd.exe --user-password MyPassword --junit-filename pd-e2e.xml 
+```
+
+Also the project is intended to be executed from a CI/CD system, [here](docs/running.md) is a full explanation on how to use it.
+
+## Extend
