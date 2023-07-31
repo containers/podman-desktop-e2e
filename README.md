@@ -1,20 +1,16 @@
 # podman-desktop-e2e
 
-This project define a set of e2e tests around [podman desktop](https://github.com/containers/podman-desktop), this is a complementary set of e2e tests for those
-user stories which requires interaction beyond the podman desktop app itself with some third party apps (i.e installers from extensions).
+This project define a set of e2e tests around [podman desktop](https://github.com/containers/podman-desktop), this is a complementary set of e2e tests for those user stories which requires interaction beyond the podman desktop app itself with some third party apps (i.e installers from extensions).
 
 ## Overview
 
-This project is intended for running without any extra dependecy, tests are self contained into a binary wich then will be run on a target host where podman dektop
-should be accessible. To accomplish this dependent-less runtime the project uses [goax](https://github.com/adrianriobo/goax) which uses OS native accessibility APIs
-to interact with UX elements (not only the ones from podman desktop but any other UX element rendered by the OS).
+This project is intended for running without any extra dependecy, tests are self contained into a binary wich then will be run on a target host where podman dektop should be accessible.  
 
-Tests specs are defined with [ginkgo testing framework](https://onsi.github.io/ginkgo/), and as mentioned before UX interactions / checks use goax.  
+To accomplish this dependent-less runtime the project uses [goax](https://github.com/adrianriobo/goax) which uses OS native accessibility APIs to interact with UX elements (not only the ones from podman desktop but any other UX element rendered by the OS).
 
 ## Build
 
-Currently the main two target OSs for the projects are Windows and MacOS: windows binary can be built on any platform, for building MacOS binary we need to build
-the binary on a MacOS machine (to ensure compatibilty it is recommended to build it on MacOS 12 Monterrey).
+Currently the main two target OSs for the projects are Windows and MacOS: windows binary can be built on any platform, for building MacOS binary we need to build the binary on a MacOS machine (to ensure compatibilty it is recommended to build it on MacOS 12 Monterrey).  
 
 Following commands will build the binary (`windows arm64 not supported`):  
 
@@ -53,3 +49,8 @@ pd-e2e.exe --pd-path /Users/rhqp/pd.exe --user-password MyPassword --junit-filen
 Also the project is intended to be executed from a CI/CD system, [here](docs/running.md) is a full explanation on how to use it.
 
 ## Extend
+
+The project is intended as an isolated project where e2e scenario can be defined and they would be implemented by interacting within the podman
+desktop application through goax.
+
+[Here](docs/extend.md) are some guidelines on how current suite of tests are defined and how this can be extended to cover more functionality from podman desktop.
