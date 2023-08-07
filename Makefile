@@ -12,7 +12,8 @@ TKN_IMG ?= quay.io/rhqp/podman-desktop-e2e-tkn:v${TKN_TASK_VERSION}
 
 
 BUILD_DIR ?= out
-ARCH ?= amd64
+NATIVE_GOARCH := $(shell env -u GOARCH go env GOARCH)
+ARCH ?= $(NATIVE_GOARCH)
 
 # https://golang.org/cmd/link/
 LDFLAGS := $(VERSION_VARIABLES) -extldflags='-static' ${GO_EXTRA_LDFLAGS}
