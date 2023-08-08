@@ -92,11 +92,11 @@ var _ = ginkgo.BeforeSuite(func() {
 	var err error
 	PDHandler, err = podmanDesktop.Open(TestContext.AppPath)
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
-	// First run will show wellcome page
-	err = PDHandler.WellcomePageDisableTelemetry()
+	// First run will show welcome page
+	err = PDHandler.WelcomePageDisableTelemetry()
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 	// Go to Podman
-	err = PDHandler.WellcomePageGoToPodman()
+	err = PDHandler.WelcomePageGoToPodman()
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
 })

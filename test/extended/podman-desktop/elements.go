@@ -3,6 +3,6 @@ package podmandesktop
 const (
 	appClose = "Close"
 
-	wellcomePageEnableTelemetry   = "Enable telemetry"
-	wellcomePageGoToPodmanDesktop = "Go to Podman Desktop"
+	welcomePageEnableTelemetry   = "Enable telemetry"
+	welcomePageGoToPodmanDesktop = "Go to Podman Desktop"
 )
