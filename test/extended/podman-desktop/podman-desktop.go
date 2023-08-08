@@ -39,22 +39,22 @@ func Open(execPath string) (*PDApp, error) {
 	return &PDApp{a}, nil
 }
 
-// On Wellcome page we should have telemetry as enable by default
+// On Welcome page we should have telemetry as enable by default
 // we change to disable and go to podman
-func (p *PDApp) WellcomePageDisableTelemetry() error {
-	exists, err := p.ExistsWithType(wellcomePageEnableTelemetry, "checkbox")
+func (p *PDApp) WelcomePageDisableTelemetry() error {
+	exists, err := p.ExistsWithType(welcomePageEnableTelemetry, "checkbox")
 	if err != nil || !exists {
 		return fmt.Errorf("error disabling telemetry :%v", err)
 	}
-	if err := p.ClickWithType(wellcomePageEnableTelemetry, "checkbox", delay.SMALL); err != nil {
+	if err := p.ClickWithType(welcomePageEnableTelemetry, "checkbox", delay.SMALL); err != nil {
 		return fmt.Errorf("error disabling telemetry: %v", err)
 	}
 	return nil
 }
 
-func (p *PDApp) WellcomePageGoToPodman() error {
-	if err := p.Click(wellcomePageGoToPodmanDesktop, delay.SMALL); err != nil {
-		return fmt.Errorf("error going to wellcome page: %v", err)
+func (p *PDApp) WelcomePageGoToPodman() error {
+	if err := p.Click(welcomePageGoToPodmanDesktop, delay.SMALL); err != nil {
+		return fmt.Errorf("error going to welcome page: %v", err)
 	}
 	return nil
 }
