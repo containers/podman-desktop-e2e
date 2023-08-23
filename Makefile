@@ -1,14 +1,13 @@
 
-PODMAN_DESKTOP_VERSION ?= 1.1.0
+VERSION ?= 1.1.0
 CONTAINER_MANAGER ?= podman
 
 # Image URL to use all building/pushing image targets
-IMG ?= quay.io/rhqp/podman-desktop-e2e:v${PODMAN_DESKTOP_VERSION}
+IMG ?= quay.io/rhqp/podman-desktop-e2e:v${VERSION}
 E2E_BINARY ?= pd-e2e
 
 # Tekton task
-TKN_TASK_VERSION ?= 0.1
-TKN_IMG ?= quay.io/rhqp/podman-desktop-e2e-tkn:v${TKN_TASK_VERSION}
+TKN_IMG ?= quay.io/rhqp/podman-desktop-e2e-tkn:v${VERSION}
 
 
 BUILD_DIR ?= out
