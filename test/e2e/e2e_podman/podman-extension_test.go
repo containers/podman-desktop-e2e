@@ -1,7 +1,7 @@
 package podman
 
 import (
-	podmanExtension "github.com/adrianriobo/podman-desktop-e2e/test/extended/podman-desktop/extension/podman"
+	podmanExtension "github.com/containers/podman-desktop-e2e/test/extended/podman-desktop/extension/podman"
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
 )

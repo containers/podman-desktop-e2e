@@ -2,6 +2,7 @@ package podman
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"testing"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/onsi/gomega"
 	"github.com/spf13/pflag"
 
-	podmanDesktop "github.com/adrianriobo/podman-desktop-e2e/test/extended/podman-desktop"
+	podmanDesktop "github.com/containers/podman-desktop-e2e/test/extended/podman-desktop"
 )
 
 type TestContextType struct {
@@ -68,13 +69,15 @@ func writeJUnitReport(report ginkgo.Report) {
 	if len(filename) == 0 {
 		filename = generateDefaultJunitReportName()
 	}
-	reporters.GenerateJUnitReportWithConfig(report,
+	if err := reporters.GenerateJUnitReportWithConfig(report,
 		filename,
 		reporters.JunitReportConfig{
 			OmitFailureMessageAttr:    true,
 			OmitCapturedStdOutErr:     true,
 			OmitTimelinesForSpecState: types.SpecStatePassed,
-		})
+		}); err != nil {
+		fmt.Printf("error setting the junit reporter: %v", err)
+	}
 }
 
 // TODO add timestamp
@@ -86,7 +89,9 @@ var PDHandler *podmanDesktop.PDApp
 
 var _ = ginkgo.BeforeSuite(func() {
 	// Cleanup system ref to PodmanDesktop to ensure fresh env
-	podmanDesktop.CleanupSystem()
+	if err := podmanDesktop.CleanupSystem(); err != nil {
+		fmt.Printf("error cleaning up the system %v", err)
+	}
 	// gomega.Expect(err).NotTo(gomega.HaveOccurred())
 	// Open the app with param from exec
 	var err error

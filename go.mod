@@ -1,4 +1,4 @@
-module github.com/adrianriobo/podman-desktop-e2e
+module github.com/containers/podman-desktop-e2e
 
 go 1.19
 
