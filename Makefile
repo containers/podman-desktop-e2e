@@ -28,6 +28,17 @@ clean:
 build:
 	go test -v test/e2e/e2e_podman/suite_test.go test/e2e/e2e_podman/podman-extension_test.go -c -o $(BUILD_DIR)/linux-amd64/pd-e2e
 
+# Run golangci-lint against code
+.PHONY: lint
+lint: $(GOPATH)/bin/golangci-lint
+	$(GOPATH)/bin/golangci-lint run
+
+$(GOPATH)/bin/golangci-lint:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
+
+.PHONY: check
+check: build lint
+
 .PHONY: cross
 cross: clean $(BUILD_DIR)/windows-amd64/pd-e2e.exe
 
