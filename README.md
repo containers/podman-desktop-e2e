@@ -34,16 +34,17 @@ out/windows-amd64/pd-e2e.exe
 
 ## Run
 
-The binary can be executed locally on the target hosts, it requires some parameters:
+The binary can be executed localy on the target hosts, it requires some parameters (on Windows):
 
-* pd-path: Set the path where the podman desktop executable is located.
+* pdPath: Set the path where the podman desktop executable is located.
+* pdUrl: Set the url where podman desktop executable will be downloaded.
 * user-password: Set the password for the currrent user (this is needed for running installers which require elevated permissions).
 * junit-filename: This is an optional parameter in case we want to set the name of the junit resulting file (Default: junit_report.xml).
 
 Following command will run the tests on a windows host:  
 
 ```bash
-pd-e2e.exe --pd-path /Users/rhqp/pd.exe --user-password MyPassword --junit-filename pd-e2e.xml 
+pd-e2e.exe --pdPath /Users/rhqp/pd.exe --user-password MyPassword --junit-filename pd-e2e.xml 
 ```
 
 Also the project is intended to be executed from a CI/CD system, [here](docs/running.md) is a full explanation on how to use it.
