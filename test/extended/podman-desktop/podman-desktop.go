@@ -6,8 +6,8 @@ import (
 	autoApp "github.com/adrianriobo/goax/pkg/goax/app"
 	"github.com/adrianriobo/goax/pkg/util/delay"
 	"github.com/adrianriobo/goax/pkg/util/logging"
-	podmanExtension "github.com/adrianriobo/podman-desktop-e2e/test/extended/podman-desktop/extension/podman"
-	"github.com/adrianriobo/podman-desktop-e2e/test/extended/podman-desktop/util/ax"
+	podmanExtension "github.com/containers/podman-desktop-e2e/test/extended/podman-desktop/extension/podman"
+	"github.com/containers/podman-desktop-e2e/test/extended/podman-desktop/util/ax"
 )
 
 type PDApp struct {

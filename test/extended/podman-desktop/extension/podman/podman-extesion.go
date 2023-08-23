@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/adrianriobo/goax/pkg/util/delay"
-	"github.com/adrianriobo/podman-desktop-e2e/test/extended/podman-desktop/util/ax"
+	"github.com/containers/podman-desktop-e2e/test/extended/podman-desktop/util/ax"
 )
 
 const (

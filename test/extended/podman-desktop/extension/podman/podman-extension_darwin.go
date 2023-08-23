@@ -1,9 +1,10 @@
 package podman
 
 import (
-	"github.com/adrianriobo/goax/pkg/util/delay"
-	"github.com/adrianriobo/podman-desktop-e2e/test/extended/podman-desktop/util/ax"
 	"os/exec"
+
+	"github.com/adrianriobo/goax/pkg/util/delay"
+	"github.com/containers/podman-desktop-e2e/test/extended/podman-desktop/util/ax"
 )
 
 const (
