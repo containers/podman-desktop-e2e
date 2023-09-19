@@ -24,7 +24,7 @@ jobs:
           -e ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }} \
           -e ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }} \
           -e ARM_CLIENT_SECRET='${{ secrets.ARM_CLIENT_SECRET }}' \
-          quay.io/rhqp/qenvs:v0.0.4-snapshot azure \
+          quay.io/rhqp/qenvs:v0.0.5 azure \
             windows create \
             --project-name 'windows-desktop' \
             --backed-url 'file:///workspace' \
@@ -32,7 +32,7 @@ jobs:
             --windows-version '${{ matrix.windows-version }}' \
             --windows-featurepack '${{ matrix.windows-featurepack }}' \
             --vmsize 'Standard_D8a_v4' \
-            --tags project=podman-desktop
+            --tags project=podman-desktop 
         # Check logs 
         podman logs -f windows-create
 
@@ -96,7 +96,7 @@ jobs:
           -e ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }} \
           -e ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }} \
           -e ARM_CLIENT_SECRET='${{ secrets.ARM_CLIENT_SECRET }}' \
-          quay.io/rhqp/qenvs:v0.0.4-snapshot azure \
+          quay.io/rhqp/qenvs:v0.0.5 azure \
             windows destroy \
             --project-name 'windows-desktop' \
             --backed-url 'file:///workspace'
