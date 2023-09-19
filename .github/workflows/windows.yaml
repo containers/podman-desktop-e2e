@@ -32,7 +32,8 @@ jobs:
             --windows-version '${{ matrix.windows-version }}' \
             --windows-featurepack '${{ matrix.windows-featurepack }}' \
             --vmsize 'Standard_D8a_v4' \
-            --tags project=podman-desktop 
+            --tags project=podman-desktop \
+            --spot
         # Check logs 
         podman logs -f windows-create
 
