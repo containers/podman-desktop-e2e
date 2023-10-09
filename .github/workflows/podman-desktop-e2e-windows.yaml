@@ -1,4 +1,4 @@
-name: Podman Desktop E2E Happy Path test
+name: E2E tests for Podman Desktop with Podman installation
 
 on:
   workflow_dispatch:
@@ -68,7 +68,7 @@ jobs:
         # Check logs for the x session
         podman logs x-session
 
-    - name: Run PDE2E builder and setup image
+    - name: Build Podman Desktop locally
       run: |
         podman run -d --name pde2e-builder-run \
           -e TARGET_HOST=$(cat host) \
@@ -88,7 +88,7 @@ jobs:
         # check logs
         podman logs -f pde2e-builder-run
         
-    - name: Run podman desktop e2e
+    - name: Install Podman via Podman Desktop using GOAX
       run: |
         # Get latest built 
         # tag=$(curl --silent https://api.github.com/repos/containers/podman-desktop/releases | jq -r 'map(select(.prerelease)) | first | .tag_name')
@@ -114,7 +114,7 @@ jobs:
         # Check logs 
         podman logs -f pd-e2e-windows
 
-    - name: Run PDE2E Runner image
+    - name: Run Podman Desktop Playwright E2E tests
       run: |
         podman run -d --name pde2e-runner-run \
           -e TARGET_HOST=$(cat host) \
@@ -134,7 +134,7 @@ jobs:
         # check logs
         podman logs -f pde2e-runner-run
 
-    - name: upload results
+    - name: Upload results
       uses: actions/upload-artifact@v3
       with:
         name: results-e2e-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
