@@ -42,5 +42,5 @@ if [[ ! -z "${PD_URL+x}" ]]; then
     install_pd
     $HOME/${TARGET_FOLDER}/pd-e2e --user-password ${USER_PASSWORD} --junit-filename "${TARGET_FOLDER}/${JUNIT_RESULTS_FILENAME}" --pd-path "$HOME/${TARGET_FOLDER}/Podman Desktop.app"
 else 
-    $HOME/${TARGET_FOLDER}/pd-e2e --user-password ${USER_PASSWORD} --junit-filename "${TARGET_FOLDER}/${JUNIT_RESULTS_FILENAME}" --pd-path "${PD_PATH}/Podman Desktop.app"
+    $HOME/${TARGET_FOLDER}/pd-e2e --user-password ${USER_PASSWORD} --junit-filename "${TARGET_FOLDER}/${JUNIT_RESULTS_FILENAME}" --pd-path "${PD_PATH}"
 fi
