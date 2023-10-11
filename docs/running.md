@@ -29,7 +29,7 @@ podman run --rm -d --name pd-e2e-darwin \
         USER_PASSWORD="$(cat userpassword)" \
         TARGET_FOLDER=pd-e2e \
         DEBUG=true \
-        PD_PATH="/Users/$(cat username)/PodmanDesktop" \
+        PD_PATH="/Users/$(cat username)/PodmanDesktop.app" \
         JUNIT_RESULTS_FILENAME=pd-e2e-results.xml \
         pd-e2e/run.sh
 
@@ -53,7 +53,7 @@ podman run --rm -d --name pd-e2e-windows \
     quay.io/rhqp/podman-desktop-e2e:v${PD_E2E_V}-windows-amd64  \
         pd-e2e/run.ps1 \
             -targetFolder pd-e2e \
-            -pdPath /Users/crcqe \
+            -pdPath "C:\Users\crcqe\podman-desktop.exe" \
             -junitResultsFilename pd-e2e-results.xml 
 
 # Execution logs
