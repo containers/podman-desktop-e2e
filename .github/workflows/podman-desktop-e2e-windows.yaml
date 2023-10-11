@@ -138,7 +138,9 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: results-e2e-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
-        path: pd-e2e/results/**
+        path: |
+          pd-e2e/results/*
+          pd-e2e-results.xml
 
     - name: Destroy instance
       if: always()
