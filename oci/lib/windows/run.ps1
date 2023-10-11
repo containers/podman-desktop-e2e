@@ -41,7 +41,7 @@ if (!$pdPath)
     Install-PD
     pd-e2e.exe --user-password $userPassword --junit-filename $junitResultsFilename --pd-path "$env:HOME\$targetFolder\pd.exe"
 } else {
-    pd-e2e.exe --user-password $userPassword --junit-filename $junitResultsFilename --pd-path "$pdPath\pd.exe"
+    pd-e2e.exe --user-password $userPassword --junit-filename $junitResultsFilename --pd-path "$pdPath"
 }
 
 #Workaround 
