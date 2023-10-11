@@ -8,7 +8,9 @@ param(
     [Parameter(Mandatory,HelpMessage='junit results filename')]
     $junitResultsFilename,
     [Parameter(HelpMessage='user password to run privileged commands (run installers)')]
-    $userPassword
+    $userPassword,
+    [Parameter(HelpMessage='Check if wsl is installed if not it will install, default true.')]
+    $wslInstallFix="true"
 )
 
 function Install-PD {
@@ -21,13 +23,17 @@ function Install-PD {
 # Run e2e
 $env:PATH="$env:PATH;$env:HOME\$targetFolder;"
 
-# Force install just in case
-wsl -l -v
-$installed=$?
+# Force installation of WSL if needed
+if ( $wslInstallFix -match 'true' )
+{
+    wsl -l -v
+    $installed=$?
 
-if (!$installed) {
-    Write-Host "installing wsl2"
-    wsl --install  
+    if (!$installed) {
+        Write-Host "Installing WSL, setting default version 2"
+        wsl --set-default-version 2
+        wsl --install --no-distribution
+    }
 }
 
 if (!$pdPath)
