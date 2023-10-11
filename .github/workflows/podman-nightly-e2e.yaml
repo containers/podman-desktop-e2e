@@ -1,4 +1,4 @@
-name: Podman Desktop E2E Happy Path test
+name: Podman Desktop Playwright E2E with Podman Nightly
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        windows-version: ['10']
+        windows-version: ['11']
         windows-featurepack: ['22h2-ent']
 
     steps:
@@ -68,7 +68,7 @@ jobs:
         # Check logs for the x session
         podman logs x-session
 
-    - name: Run PDE2E builder and setup image
+    - name: Setup dependencies and build Podman Desktop locally
       run: |
         podman run -d --name pde2e-builder-run \
           -e TARGET_HOST=$(cat host) \
@@ -81,40 +81,37 @@ jobs:
           -v $PWD:/data:z \
           quay.io/odockal/pde2e-builder:v0.0.1-snapshot  \
               pd-e2e/run.ps1 \
-                  -targetFolder pd-e2e \
-                  -resultsFolder results \
-                  -fork ${{ inputs.fork }} \
-                  -branch ${{ inputs.branch }}
+                -targetFolder pd-e2e \
+                -resultsFolder results \
+                -fork ${{ inputs.fork }} \
+                -branch ${{ inputs.branch }}
         # check logs
         podman logs -f pde2e-builder-run
-        
-    - name: Run podman desktop e2e
+
+    - name: Download Podman nightly, initialize and start it in rootless mode
       run: |
-        # Get latest built 
-        # tag=$(curl --silent https://api.github.com/repos/containers/podman-desktop/releases | jq -r 'map(select(.prerelease)) | first | .tag_name')
-        pwd
-        ls
-        cat results/pde2e-builder-results.log
-        pdPath=$(cat results/pde2e-builder-results.log)
-        # Run e2e tests
-        podman run --rm -d --name pd-e2e-windows \
+        podman run --rm -d --name pde2e-podman-run \
           -e TARGET_HOST=$(cat host) \
           -e TARGET_HOST_USERNAME=$(cat username) \
           -e TARGET_HOST_KEY_PATH=/data/id_rsa \
           -e TARGET_FOLDER=pd-e2e \
-          -e TARGET_RESULTS=pd-e2e-results.xml \
+          -e TARGET_RESULTS=results \
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
-          quay.io/rhqp/podman-desktop-e2e:v1.1.0-windows-amd64  \
-              pd-e2e/run.ps1 \
-                  -targetFolder pd-e2e \
-                  -pdPath $pdPath \
-                  -junitResultsFilename pd-e2e-results.xml 
-        # Check logs 
-        podman logs -f pd-e2e-windows
+          quay.io/odockal/pde2e-podman:v0.0.1-snapshot  \
+            pd-e2e/run.ps1 \
+              -downloadUrl "https://github.com/containers/podman/releases/download/v4.7.0/podman-remote-release-windows_amd64.zip" \
+              -version '4.7.0' \
+              -targetFolder pd-e2e \
+              -resultsFolder results \
+              -initialize 1 \
+              -rootful 1 \
+              -start 1
+        # check logs
+        podman logs -f pde2e-podman-run
 
-    - name: Run PDE2E Runner image
+    - name: Run Podman Desktop Playwright E2E tests
       run: |
         podman run -d --name pde2e-runner-run \
           -e TARGET_HOST=$(cat host) \
@@ -127,18 +124,20 @@ jobs:
           -v $PWD:/data:z \
           quay.io/odockal/pde2e-runner:v0.0.1-snapshot  \
               pd-e2e/run.ps1 \
-                  -targetFolder pd-e2e \
-                  -resultsFolder results \
-                  -fork ${{ inputs.fork }} \
-                  -branch ${{ inputs.branch }}
+                -targetFolder pd-e2e \
+                -resultsFolder results \
+                -podmanPath $(cat results/podman-location.log) \
+                -fork ${{ inputs.fork }} \
+                -branch ${{ inputs.branch }}
         # check logs
         podman logs -f pde2e-runner-run
 
-    - name: upload results
+    - name: Upload results
       uses: actions/upload-artifact@v3
       with:
         name: results-e2e-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
-        path: pd-e2e/results/**
+        path: |
+          pd-e2e/results/*
 
     - name: Destroy instance
       if: always()
