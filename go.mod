@@ -4,8 +4,8 @@ go 1.19
 
 require (
 	github.com/adrianriobo/goax v0.0.0-20230623124707-4205191b0dab
-	github.com/onsi/ginkgo/v2 v2.11.0
-	github.com/onsi/gomega v1.27.8
+	github.com/onsi/ginkgo/v2 v2.12.0
+	github.com/onsi/gomega v1.28.0
 	github.com/spf13/pflag v1.0.5
 )
 
@@ -18,9 +18,9 @@ require (
 	github.com/openstandia/w32uiautomation v0.0.0-20190416091226-c987b5b65d6b // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
-	golang.org/x/net v0.11.0 // indirect
-	golang.org/x/sys v0.9.0 // indirect
-	golang.org/x/text v0.10.0 // indirect
-	golang.org/x/tools v0.10.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
+	golang.org/x/tools v0.12.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
