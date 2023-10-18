@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        windows-version: ['10']
+        windows-version: ['10','11']
         windows-featurepack: ['22h2-ent']
 
     steps:
@@ -33,14 +33,14 @@ jobs:
           -e ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }} \
           -e ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }} \
           -e ARM_CLIENT_SECRET='${{ secrets.ARM_CLIENT_SECRET }}' \
-          quay.io/rhqp/qenvs:v0.0.5 azure \
+          quay.io/rhqp/qenvs:v0.0.6-dev azure \
             windows create \
             --project-name 'windows-desktop' \
             --backed-url 'file:///workspace' \
             --conn-details-output '/workspace' \
             --windows-version '${{ matrix.windows-version }}' \
             --windows-featurepack '${{ matrix.windows-featurepack }}' \
-            --vmsize 'Standard_D8a_v4' \
+            --vmsize 'Standard_D8s_v4' \
             --tags project=podman-desktop \
             --spot
         # Check logs 
@@ -90,12 +90,7 @@ jobs:
         
     - name: Install Podman via Podman Desktop using GOAX
       run: |
-        # Get latest built 
-        # tag=$(curl --silent https://api.github.com/repos/containers/podman-desktop/releases | jq -r 'map(select(.prerelease)) | first | .tag_name')
-        pwd
-        ls
-        cat results/pde2e-builder-results.log
-        pdPath=$(cat results/pde2e-builder-results.log)
+        cat results/pde2e-binary-path.log | awk '{print $1}'
         # Run e2e tests
         podman run --rm -d --name pd-e2e-windows \
           -e TARGET_HOST=$(cat host) \
@@ -109,8 +104,9 @@ jobs:
           quay.io/rhqp/podman-desktop-e2e:v1.1.0-windows-amd64  \
               pd-e2e/run.ps1 \
                   -targetFolder pd-e2e \
-                  -pdPath $pdPath \
-                  -junitResultsFilename pd-e2e-results.xml 
+                  -wslInstallFix 'false' \
+                  -junitResultsFilename pd-e2e-results.xml \
+                  -pdPath "$(cat results/pde2e-binary-path.log | tr '\n' " ")"
         # Check logs 
         podman logs -f pd-e2e-windows
 
@@ -139,7 +135,7 @@ jobs:
       with:
         name: results-e2e-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
         path: |
-          pd-e2e/results/*
+          results/*
           pd-e2e-results.xml
 
     - name: Destroy instance
