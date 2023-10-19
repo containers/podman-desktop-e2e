@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        windows-version: ['11']
+        windows-version: ['10','11']
         windows-featurepack: ['22h2-ent']
 
     steps:
@@ -33,14 +33,14 @@ jobs:
           -e ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }} \
           -e ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }} \
           -e ARM_CLIENT_SECRET='${{ secrets.ARM_CLIENT_SECRET }}' \
-          quay.io/rhqp/qenvs:v0.0.5 azure \
+          quay.io/rhqp/qenvs:v0.0.6-dev azure \
             windows create \
             --project-name 'windows-desktop' \
             --backed-url 'file:///workspace' \
             --conn-details-output '/workspace' \
             --windows-version '${{ matrix.windows-version }}' \
             --windows-featurepack '${{ matrix.windows-featurepack }}' \
-            --vmsize 'Standard_D8a_v4' \
+            --vmsize 'Standard_D8s_v4' \
             --tags project=podman-desktop \
             --spot
         # Check logs 
@@ -101,13 +101,14 @@ jobs:
           -v $PWD:/data:z \
           quay.io/odockal/pde2e-podman:v0.0.1-snapshot  \
             pd-e2e/run.ps1 \
-              -downloadUrl "https://github.com/containers/podman/releases/download/v4.7.0/podman-remote-release-windows_amd64.zip" \
-              -version '4.7.0' \
+              -downloadUrl "https://api.cirrus-ci.com/v1/artifact/github/containers/podman/Artifacts/binary/podman-remote-release-windows_amd64.zip" \
+              -version '4.8.0-dev' \
               -targetFolder pd-e2e \
               -resultsFolder results \
-              -initialize 1 \
-              -rootful 1 \
-              -start 1
+              -initialize 0 \
+              -rootful 0 \
+              -start 0 \
+              -installWSL 0
         # check logs
         podman logs -f pde2e-podman-run
 
@@ -128,7 +129,11 @@ jobs:
                 -resultsFolder results \
                 -podmanPath $(cat results/podman-location.log) \
                 -fork ${{ inputs.fork }} \
-                -branch ${{ inputs.branch }}
+                -branch ${{ inputs.branch }} \
+                -npmTarget "test:e2e:smoke" \
+                -initialize 1 \
+                -start 1 \
+                -rootful 0
         # check logs
         podman logs -f pde2e-runner-run
 
@@ -137,7 +142,7 @@ jobs:
       with:
         name: results-e2e-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
         path: |
-          pd-e2e/results/*
+          results/*
 
     - name: Destroy instance
       if: always()
