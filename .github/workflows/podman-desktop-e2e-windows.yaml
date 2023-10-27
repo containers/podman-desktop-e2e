@@ -1,6 +1,8 @@
 name: E2E tests for Podman Desktop with Podman installation
 
 on:
+  schedule:
+    - cron:  '0 6 * * *'
   workflow_dispatch:
     inputs:
       fork:
@@ -24,6 +26,14 @@ jobs:
         windows-featurepack: ['22h2-ent']
 
     steps:
+    - name: Set the default env. variables
+      env:
+        DEFAULT_FORK: 'odockal'
+        DEFAULT_BRANCH: 'e2e-win'
+      run: |
+        echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
+        echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
+
     - name: Create instance
       run: |
         # Create instance
@@ -83,8 +93,8 @@ jobs:
               pd-e2e/run.ps1 \
                   -targetFolder pd-e2e \
                   -resultsFolder results \
-                  -fork ${{ inputs.fork }} \
-                  -branch ${{ inputs.branch }}
+                  -fork ${{ env.FORK }} \
+                  -branch ${{ env.BRANCH }}
         # check logs
         podman logs -f pde2e-builder-run
         
@@ -125,8 +135,8 @@ jobs:
               pd-e2e/run.ps1 \
                   -targetFolder pd-e2e \
                   -resultsFolder results \
-                  -fork ${{ inputs.fork }} \
-                  -branch ${{ inputs.branch }}
+                  -fork ${{ env.FORK }} \
+                  -branch ${{ env.BRANCH }}
         # check logs
         podman logs -f pde2e-runner-run
 
