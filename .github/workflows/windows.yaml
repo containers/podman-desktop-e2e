@@ -105,14 +105,6 @@ jobs:
         # Check logs 
         podman logs -f podman-e2e
 
-    - name: Upload e2e results
-      uses: actions/upload-artifact@v3
-      with:
-        name: E2E-results-windows-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
-        path: |
-          podman-e2e-results-*.xml
-          podman-desktop-e2e-results-*.xml
-
     - name: Destroy instance
       if: always()
       run: |
@@ -129,4 +121,25 @@ jobs:
             --backed-url 'file:///workspace'
         # Check logs
         podman logs -f windows-destroy
+
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v4
+      if: always() # always run even if the previous step fails
+      with:
+        fail_on_failure: true
+        include_passed: true
+        detailed_summary: true
+        require_tests:  true
+        report_paths: '**/*results*.xml'
+
+    - name: Upload e2e test artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: E2E-results-windows-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
+        path: |
+          podman-e2e-results-*.xml
+          podman-desktop-e2e-results-*.xml
+
+
         
