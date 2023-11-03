@@ -150,7 +150,7 @@ jobs:
           -e ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }} \
           -e ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }} \
           -e ARM_CLIENT_SECRET='${{ secrets.ARM_CLIENT_SECRET }}' \
-          quay.io/rhqp/qenvs:v0.0.5 azure \
+          quay.io/rhqp/qenvs:v0.0.6-dev azure \
             windows destroy \
             --project-name 'windows-desktop' \
             --backed-url 'file:///workspace'
