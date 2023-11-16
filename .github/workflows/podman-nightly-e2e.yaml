@@ -28,8 +28,8 @@ jobs:
     steps:
     - name: Set the default env. variables
       env:
-        DEFAULT_FORK: 'odockal'
-        DEFAULT_BRANCH: 'e2e-win'
+        DEFAULT_FORK: 'containers'
+        DEFAULT_BRANCH: 'main'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
         echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
@@ -98,7 +98,7 @@ jobs:
         # check logs
         podman logs -f pde2e-builder-run
 
-    - name: Download Podman nightly, initialize and start it in rootless mode
+    - name: Download Podman nightly, do not initialize and start
       run: |
         podman run --rm -d --name pde2e-podman-run \
           -e TARGET_HOST=$(cat host) \
@@ -140,7 +140,7 @@ jobs:
                 -podmanPath $(cat results/podman-location.log) \
                 -fork ${{ env.FORK }} \
                 -branch ${{ env.BRANCH }} \
-                -npmTarget "test:e2e:smoke" \
+                -npmTarget "test:e2e" \
                 -initialize 1 \
                 -start 1 \
                 -rootful 0

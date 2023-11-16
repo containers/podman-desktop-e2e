@@ -28,8 +28,8 @@ jobs:
     steps:
     - name: Set the default env. variables
       env:
-        DEFAULT_FORK: 'odockal'
-        DEFAULT_BRANCH: 'e2e-win'
+        DEFAULT_FORK: 'containers'
+        DEFAULT_BRANCH: 'main'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
         echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
@@ -136,7 +136,8 @@ jobs:
                   -targetFolder pd-e2e \
                   -resultsFolder results \
                   -fork ${{ env.FORK }} \
-                  -branch ${{ env.BRANCH }}
+                  -branch ${{ env.BRANCH }} \
+                  -npmTarget "test:e2e"
         # check logs
         podman logs -f pde2e-runner-run
 
