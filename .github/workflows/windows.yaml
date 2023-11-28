@@ -11,8 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        windows-version: ['10', '11']
-        windows-featurepack: ['22h2-ent']
+        windows-version: ['10','11']
+        windows-featurepack: ['22h2-ent', '23h2-ent']
+        exclude:
+        - windows-version: '10'
+          windows-featurepack: '23h2-ent'
+        - windows-version: '11'
+          windows-featurepack: '22h2-ent'
 
     steps:
     - name: Create instance
@@ -24,7 +29,7 @@ jobs:
           -e ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }} \
           -e ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }} \
           -e ARM_CLIENT_SECRET='${{ secrets.ARM_CLIENT_SECRET }}' \
-          quay.io/rhqp/qenvs:v0.0.6-dev azure \
+          quay.io/rhqp/qenvs:v0.6.0 azure \
             windows create \
             --project-name 'windows-desktop' \
             --backed-url 'file:///workspace' \
@@ -115,7 +120,7 @@ jobs:
           -e ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }} \
           -e ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }} \
           -e ARM_CLIENT_SECRET='${{ secrets.ARM_CLIENT_SECRET }}' \
-          quay.io/rhqp/qenvs:v0.0.6-dev azure \
+          quay.io/rhqp/qenvs:v0.6.0 azure \
             windows destroy \
             --project-name 'windows-desktop' \
             --backed-url 'file:///workspace'
