@@ -1,4 +1,4 @@
-name: E2E Podman functionality through PD Podman installation
+name: Podman E2E with Podman installation
 
 on:
   workflow_dispatch:

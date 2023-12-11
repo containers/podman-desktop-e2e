@@ -1,4 +1,4 @@
-name: E2E tests for Podman Desktop with Podman installation
+name: Podman Desktop E2E with Podman installation
 
 on:
   schedule:
@@ -13,6 +13,11 @@ on:
       branch:
         default: 'main'
         description: 'Podman Desktop repo branch'
+        type: string
+        required: true
+      npm_target:
+        default: 'test:e2e:smoke'
+        description: 'npm target to run tests'
         type: string
         required: true
 
@@ -35,9 +40,11 @@ jobs:
       env:
         DEFAULT_FORK: 'containers'
         DEFAULT_BRANCH: 'main'
+        DEFAULT_NPM_TARGET: 'test:e2e:smoke'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
         echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
+        echo "NPM_TARGET=${{ github.event.inputs.npm_target || env.DEFAULT_NPM_TARGET }}" >> $GITHUB_ENV
 
     - name: Create instance
       run: |
@@ -142,7 +149,7 @@ jobs:
                   -resultsFolder results \
                   -fork ${{ env.FORK }} \
                   -branch ${{ env.BRANCH }} \
-                  -npmTarget "test:e2e"
+                  -npmTarget ${{ env.NPM_TARGET }}
         # check logs
         podman logs -f pde2e-runner-run
 
