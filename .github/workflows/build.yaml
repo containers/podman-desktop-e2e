@@ -35,7 +35,7 @@ jobs:
       run: ARCH=${{ matrix.arch }} make build-darwin
 
     - name: upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: darwin-${{ matrix.arch }}
         path: "./out/darwin-${{ matrix.arch }}/pd-e2e"
@@ -62,7 +62,7 @@ jobs:
       run:  $env:ARCH='${{ matrix.arch }}'; make build-windows
 
     - name: upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: windows-${{ matrix.arch }}
         path: "./out/windows-${{ matrix.arch }}/pd-e2e.exe"
