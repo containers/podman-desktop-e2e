@@ -85,7 +85,7 @@ jobs:
       run: mkdir -p oci/bin/${{ matrix.os }}-${{ matrix.arch }}
 
     - name: Copy binary
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ matrix.os }}-${{ matrix.arch }}
         path: oci/bin/${{ matrix.os }}-${{ matrix.arch }}
@@ -127,7 +127,7 @@ jobs:
       run: mkdir -p oci/bin/${{ matrix.os }}-${{ matrix.arch }}
 
     - name: Copy binary
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ matrix.os }}-${{ matrix.arch }}
         path: oci/bin/${{ matrix.os }}-${{ matrix.arch }}
