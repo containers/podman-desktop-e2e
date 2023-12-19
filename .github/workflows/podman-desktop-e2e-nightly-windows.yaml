@@ -16,7 +16,7 @@ on:
         type: string
         required: true
       npm_target:
-        default: 'test:e2e:smoke'
+        default: 'test:e2e'
         description: 'npm target to run tests'
         type: string
         required: true
@@ -40,7 +40,7 @@ jobs:
       env:
         DEFAULT_FORK: 'containers'
         DEFAULT_BRANCH: 'main'
-        DEFAULT_NPM_TARGET: 'test:e2e:smoke'
+        DEFAULT_NPM_TARGET: 'test:e2e'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
         echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
