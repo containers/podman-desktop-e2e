@@ -36,6 +36,9 @@ jobs:
           windows-featurepack: '22h2-ent'
 
     steps:
+    - name: Set Backend URL Storage ID
+      run: echo "STORAGE_ID=${{ github.workflow// / }}_${{ matrix.windows-version }}_${{ matrix.windows-featurepack }}_${{ github.run_id }}-${{ github.run_number }}" >> $GITHUB_ENV
+
     - name: Set the default env. variables
       env:
         DEFAULT_FORK: 'containers'
@@ -58,7 +61,7 @@ jobs:
           quay.io/rhqp/qenvs:v0.6.0 azure \
             windows create \
             --project-name 'windows-desktop' \
-            --backed-url 'file:///workspace' \
+            --backed-url 'file:///${STORAGE_ID}' \
             --conn-details-output '/workspace' \
             --windows-version '${{ matrix.windows-version }}' \
             --windows-featurepack '${{ matrix.windows-featurepack }}' \
@@ -166,7 +169,7 @@ jobs:
           quay.io/rhqp/qenvs:v0.6.0 azure \
             windows destroy \
             --project-name 'windows-desktop' \
-            --backed-url 'file:///workspace'
+            --backed-url 'file:///${STORAGE_ID}'
         # Check logs
         podman logs -f windows-destroy
 
