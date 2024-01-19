@@ -8,6 +8,12 @@ on:
     secrets:
       env_vars:
         required: true
+  workflow_dispatch:
+    inputs:
+      host_id:
+        description: 'AWS Host ID'
+        type: string
+        required: false
 
 jobs:
   podman-e2e:
@@ -15,44 +21,57 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['13','14']
-        arch: ['m1', 'm2']
+        # version: ['13','14']
+        version: ['14']
+        # arch: ['m1', 'm2']
+        arch: ['m1']
         qenvs-version: ['v0.6.1']
 
     steps:
     - name: Decode credentials as environment variables
+      # Runs only is the trigger event is a workflow call - run by mac-scheduler
+      if: github.event_name == 'workflow_call'
       env:
         env_vars: ${{ secrets.env_vars }}
       run: |
+        echo "Getting HOST_ID from parent workflow"
         for i in $env_vars; do
           i=$(echo $i | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
           echo ::add-mask::${i#*=}
           printf '%s\n' "$i" >> $GITHUB_ENV
         done
 
-    - name: Validate credentials
+    - name: Set host id into environment variables
+      # Runs only is the trigger event is a workflow dispatch - run manually
+      if: github.event_name == 'workflow_dispatch'
+      env:
+        HOST_ID: ${{ github.event.inputs.host_id }}
+      run: |
+        echo "Setting HOST_ID from Workflow input: ${{ env.HOST_ID }}"
+
+    - name: Validate Host ID
       run: |
         # Secrets are now available as masked environment variable.
         echo $HOST_D # or ${{ env.HOST_ID }}
 
     - name: Create instance on the host passing --host-id
       # run: |
-      #   # # Create instance with provided HOST_ID
-      #   # podman run -d --name mac-create --rm \
-      #   # -v ${PWD}:/workspace:z \
-      #   # -e AWS_ACCESS_KEY_ID=${{ AWS_ACCESS_KEY_ID }} \
-      #   # -e AWS_SECRET_ACCESS_KEY='${{ AWS_SECRET_ACCESS_KEY }}' \
-      #   # -e AWS_DEFAULT_REGION=us-east-1 \
-      #   # quay.io/rhqp/qenvs:${{ matrix.qenvs-version }} aws \
-      #   #   mac create \
-      #   #     --host-id ${{ env.HOST_ID }} 
-      #   #     --project-name mac-desktop \
-      #   #     --backed-url file:///workspace \
-      #   #     --conn-details-output /workspace \
-      #   #     --version '${{ matrix.version }}' \
-      #   #     --arch '${{ matrix.arch }}'
-      #   # # Check logs 
-      #   # podman logs -f mac-create
+        # # Create instance with provided HOST_ID
+        # podman run -d --name mac-create --rm \
+        # -v ${PWD}:/workspace:z \
+        # -e AWS_ACCESS_KEY_ID=${{ AWS_ACCESS_KEY_ID }} \
+        # -e AWS_SECRET_ACCESS_KEY='${{ AWS_SECRET_ACCESS_KEY }}' \
+        # -e AWS_DEFAULT_REGION=us-east-1 \
+        # quay.io/rhqp/qenvs:${{ matrix.qenvs-version }} aws \
+        #   mac create \
+        #     --host-id ${{ env.HOST_ID }} 
+        #     --project-name mac-desktop \
+        #     --backed-url file:///workspace \
+        #     --conn-details-output /workspace \
+        #     --version '${{ matrix.version }}' \
+        #     --arch '${{ matrix.arch }}'
+        # # Check logs 
+        # podman logs -f mac-create
       run: |
         echo "Passing ${{ env.HOST_ID }} info"
 

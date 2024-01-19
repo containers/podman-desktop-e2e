@@ -1,6 +1,6 @@
-# This example workflow represents an independent workflow that tests something, runs after E2E test Job is finished
-# and makes use of startJob machine's access information
-name: Dummy Mac Test Job
+# This example workflow represents an independent dummy workflow serves as a template for
+# other possible workflows getting information for creating a Mac host from its parent scheduler job
+name: Dummy Mac Template Job
 
 on:
   workflow_call:

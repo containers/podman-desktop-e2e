@@ -37,23 +37,23 @@ jobs:
       host_id: ${{ steps.set_secret.outputs.host_id }}
     
     steps:
-      - name: Create a host instance on AWS
+      - name: Create a host on AWS
         # run: |
-        #   # Create host only - How to get host ID?
-        #   # podman run -d --name mac-create --rm \
-        #   # -v ${PWD}:/workspace:z \
-        #   # -e AWS_ACCESS_KEY_ID=${{ AWS_ACCESS_KEY_ID }} \
-        #   # -e AWS_SECRET_ACCESS_KEY='${{ AWS_SECRET_ACCESS_KEY }}' \
-        #   # -e AWS_DEFAULT_REGION=us-east-1 \
-        #   # quay.io/rhqp/qenvs:${{ matrix.qenvs-version }} aws \
-        #   #   mac create \
-        #   #     --host-only
-        #   #     --project-name mac-desktop \
-        #   #     --backed-url file:///workspace \
-        #   #     --conn-details-output /workspace \
-        #   # # Check logs 
-        #   # podman logs -f mac-create
-        #   # Simulate step that creates dedicatedHostID
+          # Create host only - How to get host ID?
+          # podman run -d --name mac-host-create --rm \
+          # -v ${PWD}:/workspace:z \
+          # -e AWS_ACCESS_KEY_ID=${{ AWS_ACCESS_KEY_ID }} \
+          # -e AWS_SECRET_ACCESS_KEY='${{ AWS_SECRET_ACCESS_KEY }}' \
+          # -e AWS_DEFAULT_REGION=us-east-1 \
+          # quay.io/rhqp/qenvs:${{ matrix.qenvs-version }} aws \
+          #   mac create \
+          #     --host-only
+          #     --project-name mac-desktop \
+          #     --backed-url file:///workspace \
+          #     --conn-details-output /workspace \
+          # # Check logs 
+          # podman logs -f mac-host-create
+          # Simulate step that creates dedicatedHostID
         run: |
           # requires sudo! mkdir /workspace
           mkdir workspace
@@ -63,9 +63,6 @@ jobs:
 
       - name: Output encoded secrets
         id: set_secret
-        # env:
-        #   HOST: ${{ secrets.HOST }}
-        #   KEY: ${{ secrets.KEY }}
         run: |
           host_id=$(cat $GITHUB_WORKSPACE/workspace/dedicatedHostID | base64 -w0 | base64 -w0)
           echo "host_id is $host_id"
@@ -83,7 +80,7 @@ jobs:
     needs: createHostJob
     secrets:
       env_vars: |
-        HOST_ID=${{ needs.startJob.createHostJob.host_id }}
+        HOST_ID=${{ needs.createHostJob.outputs.host_id }}
 
   cleanUpJob:
     runs-on: ubuntu-latest
