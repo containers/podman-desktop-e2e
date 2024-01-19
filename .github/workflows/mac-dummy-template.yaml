@@ -1,0 +1,37 @@
+# This example workflow represents an independent workflow that tests something, runs after E2E test Job is finished
+# and makes use of startJob machine's access information
+name: Dummy Mac Test Job
+
+on:
+  workflow_call:
+    secrets:
+      env_vars:
+        required: true
+
+jobs:
+  dummy-mac-job:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Decode credentials as environment variables
+        env:
+          env_vars: ${{ secrets.env_vars }}
+        run: |
+          for i in $env_vars; do
+            i=$(echo $i | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
+            echo ::add-mask::${i#*=}
+            printf '%s\n' "$i" >> $GITHUB_ENV
+          done
+      - name: Validate credentials
+        run: |
+          # Secrets are now available as masked environment variable.
+          echo $HOST_ID # or ${{ env.HOST_ID }}
+
+      - name: Run tests
+        run: |
+          echo "Testing like a devil"
+
+      - name: Archive artifacts
+        run: |
+          echo "archiving..."
