@@ -1,0 +1,103 @@
+# Idea of this Mac based workflows is as follows:
+# Main job (this one), controlls the schedulling of the associated jobs. 
+# It also creates an initial request for a host machine on AWS and grants the access to the machine to the particular jobs.
+# Associated jobs has their own scheduller that must be agreed upon outside of this job. 
+# Once the external job is started, it requires this job to get access to the secrets require to connect to the machine using qenvs project
+# At the end of the day, another schedulled trigger runs a clean up job that will destroy the instance and free up resources.
+
+# Questions
+# 1. Should we rely on providing a concrete time frames to a various jobs/teams to make use of the machine?
+# 2. Jobs could be run in a sequence, one after another. Every job would need to have a timeout set so we can execute all in 24 hours
+# 3. How can we make use of an access information if the jobs are done and we still have a dedicated time on the machine?
+# 4. What teams to include? This sound like totally different project/repo
+
+
+# Solution of passing secrets is based on https://github.com/orgs/community/discussions/13082
+
+name: Mac Workflow Scheduler
+
+# env:
+#   CRON_START: '1 10 * * 4' # “At 10:01 on Thursday.”
+#   CRON_END: '10 10 * * 4' # “At 10:10 on Thursday.”
+
+# on:
+#   schedule: 
+#   - cron: '1 10 * * 4' # “At 10:01 on Thursday.”
+#   - cron: '10 10 * * 4' # “At 10:10 on Thursday.”
+
+on:
+  workflow_dispatch:
+
+jobs:
+  createHostJob:
+    runs-on: ubuntu-latest
+    # if: ${{ github.event_name == 'schedule' && github.event.inputs.cron == ${{ env.CRON_START }} }}
+
+    outputs:
+      host_id: ${{ steps.set_secret.outputs.host_id }}
+    
+    steps:
+      - name: Create a host instance on AWS
+        # run: |
+        #   # Create host only - How to get host ID?
+        #   # podman run -d --name mac-create --rm \
+        #   # -v ${PWD}:/workspace:z \
+        #   # -e AWS_ACCESS_KEY_ID=${{ AWS_ACCESS_KEY_ID }} \
+        #   # -e AWS_SECRET_ACCESS_KEY='${{ AWS_SECRET_ACCESS_KEY }}' \
+        #   # -e AWS_DEFAULT_REGION=us-east-1 \
+        #   # quay.io/rhqp/qenvs:${{ matrix.qenvs-version }} aws \
+        #   #   mac create \
+        #   #     --host-only
+        #   #     --project-name mac-desktop \
+        #   #     --backed-url file:///workspace \
+        #   #     --conn-details-output /workspace \
+        #   # # Check logs 
+        #   # podman logs -f mac-create
+        #   # Simulate step that creates dedicatedHostID
+        run: |
+          # requires sudo! mkdir /workspace
+          mkdir workspace
+          echo "asd123-asd11-44556" >> $GITHUB_WORKSPACE/workspace/dedicatedHostID
+          # Read Host ID, encrypt it and pass it to the gha outputs
+          echo "Host ID: $(cat $GITHUB_WORKSPACE/workspace/dedicatedHostID)"
+
+      - name: Output encoded secrets
+        id: set_secret
+        # env:
+        #   HOST: ${{ secrets.HOST }}
+        #   KEY: ${{ secrets.KEY }}
+        run: |
+          host_id=$(cat $GITHUB_WORKSPACE/workspace/dedicatedHostID | base64 -w0 | base64 -w0)
+          echo "host_id is $host_id"
+          echo "host_id=$host_id" >> $GITHUB_OUTPUT
+
+  podman-e2e:
+    uses: ./.github/workflows/podman-e2e-mac.yaml
+    needs: createHostJob
+    secrets:
+      env_vars: |
+        HOST_ID=${{ needs.createHostJob.outputs.host_id }}
+
+  mac-template: 
+    uses: ./.github/workflows/mac-dummy-template.yaml
+    needs: createHostJob
+    secrets:
+      env_vars: |
+        HOST_ID=${{ needs.startJob.createHostJob.host_id }}
+
+  cleanUpJob:
+    runs-on: ubuntu-latest
+    needs: [createHostJob, podman-e2e, mac-template]
+    env:
+      env_vars: |
+        HOST_ID: ${{ needs.createHostJob.outputs.host_id }}
+    # if: ${{ github.event_name == 'schedule' && github.event.inputs.cron == ${{ env.CRON_END }} }}
+
+    # outputs:
+    #   host: ${{ steps.createHostJob.outputs.host }}
+
+    steps:
+      - name: Running Clean up Action
+        run: |
+          echo "Final job is running with HOST_ID=${{ needs.createHostJob.outputs.HOST_ID }}"
+          echo "Bye bye"
