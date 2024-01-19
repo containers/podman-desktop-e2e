@@ -1,0 +1,141 @@
+# This example workflow represents an independent workflow that tests something, runs after E2E test Job is finished
+# and makes use of startJob machine's access information
+
+name: Podman E2E with Podman installation on Mac OS
+
+on:
+  workflow_call:
+    secrets:
+      env_vars:
+        required: true
+
+jobs:
+  podman-e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['13','14']
+        arch: ['m1', 'm2']
+        qenvs-version: ['v0.6.1']
+
+    steps:
+    - name: Decode credentials as environment variables
+      env:
+        env_vars: ${{ secrets.env_vars }}
+      run: |
+        for i in $env_vars; do
+          i=$(echo $i | sed 's/=.*//g')=$(echo ${i#*=} | base64 -di | base64 -di)
+          echo ::add-mask::${i#*=}
+          printf '%s\n' "$i" >> $GITHUB_ENV
+        done
+
+    - name: Validate credentials
+      run: |
+        # Secrets are now available as masked environment variable.
+        echo $HOST_D # or ${{ env.HOST_ID }}
+
+    - name: Create instance on the host passing --host-id
+      run: |
+        # # Create instance with provided HOST_ID
+        # podman run -d --name mac-create --rm \
+        # -v ${PWD}:/workspace:z \
+        # -e AWS_ACCESS_KEY_ID=${{ AWS_ACCESS_KEY_ID }} \
+        # -e AWS_SECRET_ACCESS_KEY='${{ AWS_SECRET_ACCESS_KEY }}' \
+        # -e AWS_DEFAULT_REGION=us-east-1 \
+        # quay.io/rhqp/qenvs:${{ matrix.qenvs-version }} aws \
+        #   mac create \
+        #     --host-id ${{ env.HOST_ID }} 
+        #     --project-name mac-desktop \
+        #     --backed-url file:///workspace \
+        #     --conn-details-output /workspace \
+        #     --version '${{ matrix.version }}' \
+        #     --arch '${{ matrix.arch }}'
+        # # Check logs 
+        # podman logs -f mac-create
+        echo "Passing ${{ env.HOST_ID }} info"
+
+    # - name: Check instance system info
+    #   run: |
+    #     ssh -i id_rsa \
+    #       -o StrictHostKeyChecking=no \
+    #       -o UserKnownHostsFile=/dev/null \
+    #       -o ServerAliveInterval=30 \
+    #       -o ServerAliveCountMax=1200 \
+    #       $(cat username)@$(cat host) "systeminfo"
+
+    # - name: Emulate X session 
+    #   run: |
+    #     # use fake rdp to emulate an active x session
+    #     podman run -d --name x-session \
+    #       -e RDP_HOST=$(cat host) \
+    #       -e RDP_USER=$(cat username) \
+    #       -e RDP_PASSWORD=$(cat userpassword) \
+    #       quay.io/rhqp/frdp:v0.0.1
+    #     # Wait until the x session has been created
+    #     podman wait --condition running x-session
+    #     # Check logs for the x session
+    #     podman logs x-session
+        
+    # - name: Run podman desktop e2e
+    #   run: |
+    #     # Get latest built 
+    #     tag=$(curl --silent https://api.github.com/repos/containers/podman-desktop/releases | jq -r 'map(select(.prerelease)) | first | .tag_name')
+    #     # Run e2e tests
+    #     podman run --rm -d --name pd-e2e-mac \
+    #       -e TARGET_HOST=$(cat host) \
+    #       -e TARGET_HOST_USERNAME=$(cat username) \
+    #       -e TARGET_HOST_KEY_PATH=/data/id_rsa \
+    #       -e TARGET_FOLDER=pd-e2e \
+    #       -e TARGET_RESULTS=podman-desktop-e2e-results-${tag}.xml \
+    #       -e OUTPUT_FOLDER=/data \
+    #       -e DEBUG=true \
+    #       -v $PWD:/data:z \
+    #       quay.io/rhqp/podman-desktop-e2e:v1.1.0-windows-amd64  \
+    #           pd-e2e/run.ps1 \
+    #               -wslInstallFix 'false' \
+    #               -targetFolder pd-e2e \
+    #               -pdUrl "https://github.com/containers/podman-desktop/releases/download/${tag}/podman-desktop-${tag:1}.exe" \
+    #               -junitResultsFilename podman-desktop-e2e-results-${tag}.xml 
+    #     # Check logs 
+    #     podman logs -f pd-e2e-mac
+
+    - name: Destroy instance
+      if: always()
+      run: |
+        # # Destroy instance
+        # podman run -d --name mac-destroy --rm \
+        #   -v ${PWD}:/workspace:z \
+        #   -e AWS_ACCESS_KEY_ID=${{ AWS_ACCESS_KEY_ID }} \
+        #   -e AWS_SECRET_ACCESS_KEY='${{ AWS_SECRET_ACCESS_KEY }}' \
+        #   -e AWS_DEFAULT_REGION=us-east-1 \
+        #   quay.io/rhqp/qenvs:${{ matrix.qenvs-version }} aws \
+        #     mac destroy \
+        #     --host-id ${{ env.HOST_ID }}
+        #     --project-name mac-desktop \
+        #     --backed-url 'file:///workspace'
+        # # Check logs
+        # podman logs -f mac-destroy
+        echo "Destroying instance with ${{ env.HOST_ID }}"
+
+    # - name: Publish Test Report
+    #   uses: mikepenz/action-junit-report@v4
+    #   if: always() # always run even if the previous step fails
+    #   with:
+    #     fail_on_failure: true
+    #     include_passed: true
+    #     detailed_summary: true
+    #     require_tests:  true
+    #     report_paths: '**/*results*.xml'
+
+    # - name: Upload e2e test artifacts
+    #   uses: actions/upload-artifact@v4
+    #   if: always()
+    #   with:
+    #     name: E2E-results-mac-${{ matrix.version }}${{ matrix.arch }}
+    #     path: |
+    #       podman-e2e-results-*.xml
+    #       podman-desktop-e2e-results-*.xml
+
+
+        
