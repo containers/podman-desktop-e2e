@@ -132,7 +132,11 @@ spec:
       value: $(params.userpassword)
     script: |
       #!/bin/sh
-      . entrypoint.sh
+      
+      # Sidecar is used to create a fake RDP connection, this is only required for windows
+      if [[ $(params.os) == "windows" ]]; then
+        . entrypoint.sh
+      fi
       
     resources:      
       requests:
