@@ -38,6 +38,8 @@ if [ "${DEBUG:-}" = "true" ]; then
   set -xuo 
 fi
 
+# Ensure we can execute pd-e2e
+chmod +x $HOME/${TARGET_FOLDER}/pd-e2e
 if [[ ! -z "${PD_URL+x}" ]]; then
     install_pd
     $HOME/${TARGET_FOLDER}/pd-e2e --user-password ${USER_PASSWORD} --junit-filename "${TARGET_FOLDER}/${JUNIT_RESULTS_FILENAME}" --pd-path "$HOME/${TARGET_FOLDER}/Podman Desktop.app"
