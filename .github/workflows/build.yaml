@@ -132,9 +132,9 @@ jobs:
         name: ${{ matrix.os }}-${{ matrix.arch }}
         path: oci/bin/${{ matrix.os }}-${{ matrix.arch }}
 
-    - name: Set permissions
+    - name: Check
       shell: bash
-      run: chmod +x oci/bin/${{ matrix.os }}-${{ matrix.arch }}
+      run: ls oci/bin/${{ matrix.os }}-${{ matrix.arch }}
 
     - name: Build
       shell: bash
