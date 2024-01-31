@@ -67,6 +67,9 @@ spec:
   steps:
   - name: e2e
     image: quay.io/rhqp/podman-desktop-e2e:v$(params.podman-desktop-version)-$(params.os)-$(params.arch)
+    # We do not have a strict control on versions (as so they can be override)
+    # force here to pull everytime just in case it is overriden
+    imagePullPolicy: Always
     script: |
       #!/bin/bash
 
