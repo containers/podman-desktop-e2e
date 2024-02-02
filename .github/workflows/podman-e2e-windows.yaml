@@ -65,8 +65,6 @@ jobs:
         podman logs x-session
         
     - name: Run podman desktop e2e
-      env:
-        PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
       run: |
         # Get latest built 
         tag=$(curl --silent https://api.github.com/repos/containers/podman-desktop/releases | jq -r 'map(select(.prerelease)) | first | .tag_name')
