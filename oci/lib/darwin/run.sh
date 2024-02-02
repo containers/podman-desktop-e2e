@@ -38,6 +38,10 @@ if [ "${DEBUG:-}" = "true" ]; then
   set -xuo 
 fi
 
+# Ensure no previous pd is running
+pdpid=$(launchctl list | grep podman | awk '{print $1}')
+sudo kill -9 $pdpid
+
 # Ensure we can execute pd-e2e
 chmod +x $HOME/${TARGET_FOLDER}/pd-e2e
 if [[ ! -z "${PD_URL+x}" ]]; then
