@@ -36,6 +36,10 @@ if ( $wslInstallFix -match 'true' )
     }
 }
 
+# Ensure no previous pd is running
+$pdpid=Get-Process "Podman Desktop" | Select Id -ExpandProperty Id | Select-Object -first 1
+Stop-Process -ID $pdpid -Force
+
 if (!$pdPath)
 {
     Install-PD
