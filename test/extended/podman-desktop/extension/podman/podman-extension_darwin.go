@@ -15,6 +15,8 @@ const (
 	installerAgree    = "Agree"
 	installerInstall  = "Install"
 	installerClose    = "Close"
+
+	installerSelectLocationTitle = "Select a Destination"
 )
 
 func cleanupSystem() error {
@@ -46,6 +48,14 @@ func runInstaller(userPassword string) error {
 	}
 	if err := i.Click(installerAgree, delay.SMALL); err != nil {
 		return installerError(err)
+	}
+	if selectLocationExists, err := i.ExistsWithType(installerSelectLocationTitle, "text"); selectLocationExists {
+		if err != nil {
+			return installerError(err)
+		}
+		if err := i.Click(installerContinue, delay.SMALL); err != nil {
+			return installerError(err)
+		}
 	}
 	if err := i.Click(installerInstall, delay.SMALL); err != nil {
 		return installerError(err)
