@@ -124,22 +124,24 @@ spec:
 
   sidecars:
   - name: fake-rdp
-    image: quay.io/rhqp/frdp:v0.0.1
+    image: quay.io/rhqp/fxc:v1.0.0
     imagePullPolicy: Always
     env:
-    - name: RDP_HOST
+    - name: HOST
       value: $(params.host)
-    - name: RDP_USER
+    - name: USER
       value: $(params.username)
-    - name: RDP_PASSWORD
+    - name: PASSWORD
       value: $(params.userpassword)
     script: |
       #!/bin/sh
-      
+
+      PROTOCOL=vnc
       # Sidecar is used to create a fake RDP connection, this is only required for windows
       if [[ $(params.os) == "windows" ]]; then
-        . entrypoint.sh
+        PROTOCOL=rdp
       fi
+      . entrypoint.sh
       
     resources:      
       requests:
