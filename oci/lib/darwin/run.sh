@@ -50,3 +50,7 @@ if [[ ! -z "${PD_URL+x}" ]]; then
 else 
     $HOME/${TARGET_FOLDER}/pd-e2e --user-password ${USER_PASSWORD} --junit-filename "${TARGET_FOLDER}/${JUNIT_RESULTS_FILENAME}" --pd-path "${PD_PATH}"
 fi
+
+# Kill PD testing instance
+pdpid=$(launchctl list | grep application.io.podmandesktop.PodmanDesktop | awk '{print $1}')
+sudo kill -9 $pdpid
