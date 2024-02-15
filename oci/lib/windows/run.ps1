@@ -50,3 +50,7 @@ if (!$pdPath)
 
 #Workaround 
 mv junit_report.xml "$targetFolder\$junitResultsFilename"
+
+# Kill PD testing instance
+$pdpid=Get-Process "Podman Desktop" | Select Id -ExpandProperty Id | Select-Object -first 1
+Stop-Process -ID $pdpid -Force
