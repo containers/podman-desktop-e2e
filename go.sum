@@ -2,6 +2,8 @@ github.com/adrianriobo/goax v0.0.0-20230623124707-4205191b0dab h1:SlHYOcfWkUlIJ0
 github.com/adrianriobo/goax v0.0.0-20230623124707-4205191b0dab/go.mod h1:yOPIPPkjny6EixjEy3bLiUKDGeKqsgYX74JpJtxSHkM=
 github.com/adrianriobo/goax v0.0.0-20230810112110-eb7e85f31a68 h1:774q90aU+kBXEVo2zB9ybZM/XlznXT+Yt9v/YTT7wcY=
 github.com/adrianriobo/goax v0.0.0-20230810112110-eb7e85f31a68/go.mod h1:yOPIPPkjny6EixjEy3bLiUKDGeKqsgYX74JpJtxSHkM=
+github.com/adrianriobo/goax v0.0.0-20240227173106-4fc2a33d5b9b h1:IwBma7Pea3EkQq3PnaLySNc57AFx36+GgE0oY+mBxIw=
+github.com/adrianriobo/goax v0.0.0-20240227173106-4fc2a33d5b9b/go.mod h1:yOPIPPkjny6EixjEy3bLiUKDGeKqsgYX74JpJtxSHkM=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
