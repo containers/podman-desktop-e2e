@@ -37,16 +37,19 @@ if ( $wslInstallFix -match 'true' )
 }
 
 # Ensure no previous pd is running
-$pdpid=Get-Process "Podman Desktop" | Select Id -ExpandProperty Id | Select-Object -first 1
-Stop-Process -ID $pdpid -Force
-
+$pp=Get-Process "Podman Desktop"
+if ($pp) {
+    $pdpid=$pp | Select Id -ExpandProperty Id | Select-Object -first 1
+    Stop-Process -ID $pdpid -Force
+}
 if (!$pdPath)
 {
     Install-PD
-    pd-e2e.exe --user-password $userPassword --junit-filename $junitResultsFilename --pd-path "$env:HOME\$targetFolder\pd.exe"
-} else {
-    pd-e2e.exe --user-password $userPassword --junit-filename $junitResultsFilename --pd-path "$pdPath"
+    $pdPath="$env:HOME\$targetFolder\pd.exe"
 }
+Start-Process powershell -verb runas -ArgumentList "Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False" -wait
+pd-e2e.exe --user-password $userPassword --junit-filename $junitResultsFilename --pd-path "$pdPath"
+Start-Process powershell -verb runas -ArgumentList "Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True" -wait
 
 #Workaround 
 mv junit_report.xml "$targetFolder\$junitResultsFilename"
