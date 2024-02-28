@@ -45,6 +45,9 @@ jobs:
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
         echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
         echo "NPM_TARGET=${{ github.event.inputs.npm_target || env.DEFAULT_NPM_TARGET }}" >> $GITHUB_ENV
+    
+    - name: Set Backend URL Storage ID
+      run: echo "STORAGE_ID=${{ github.workflow// / }}_${{ matrix.windows-version }}_${{ matrix.windows-featurepack }}_${{ github.run_id }}-${{ github.run_number }}" >> $GITHUB_ENV
 
     - name: Create instance
       run: |
@@ -58,7 +61,7 @@ jobs:
           quay.io/rhqp/qenvs:v0.6.0 azure \
             windows create \
             --project-name 'windows-desktop' \
-            --backed-url 'file:///workspace' \
+            --backed-url 'file:///${STORAGE_ID}' \
             --conn-details-output '/workspace' \
             --windows-version '${{ matrix.windows-version }}' \
             --windows-featurepack '${{ matrix.windows-featurepack }}' \
@@ -174,7 +177,7 @@ jobs:
           quay.io/rhqp/qenvs:v0.6.0 azure \
             windows destroy \
             --project-name 'windows-desktop' \
-            --backed-url 'file:///workspace'
+            --backed-url 'file:///${STORAGE_ID}'
         # Check logs
         podman logs -f windows-destroy
 
