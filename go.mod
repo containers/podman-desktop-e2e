@@ -1,6 +1,6 @@
 module github.com/containers/podman-desktop-e2e
 
-go 1.19
+go 1.20
 
 require (
 	github.com/adrianriobo/goax v0.0.0-20240227173106-4fc2a33d5b9b
