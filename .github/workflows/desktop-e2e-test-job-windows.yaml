@@ -1,8 +1,7 @@
-name: Podman Desktop E2E with Podman installation
+name: Test Workflow Podman Desktop E2E with Podman
+run-name: Debugging Desktop E2E Tests with Podman ${{ github.event.inputs.podman_version }}
 
 on:
-  schedule:
-    - cron:  '0 6 * * *'
   workflow_dispatch:
     inputs:
       fork:
@@ -20,20 +19,51 @@ on:
         description: 'npm target to run tests'
         type: string
         required: true
+      podman_remote_url:
+        default: 'https://github.com/containers/podman/releases/download/v4.9.0/podman-remote-release-windows_amd64.zip'
+        description: 'podman remote zip'
+        type: string
+        required: true
+      podman_version:
+        default: '4.9.0'
+        description: 'Podman folder version in archive'
+        type: 'string'
+        required: true
+      podman_initialize:
+        default: '0'
+        description: 'Initialize Podman Machine'
+        type: 'string'
+        required: true
+      podman_start:
+        default: '0'
+        description: 'Start Podman Machine'
+        type: 'string'
+        required: true
+      podman_rootful:
+        default: '0'
+        description: 'Rootful Podman Machine'
+        type: 'string'
+        required: true
+      podman_networking:
+        default: '0'
+        description: 'User Mode Networking Podman Machine'
+        type: 'string'
+        required: true
+      env_vars:
+        default: 'VAR1=xxx,VAR2=true,VAR3=15'
+        description: 'Env. Variables passed into target machine'
+        type: 'string'
+        required: true
 
 jobs:
   windows:
+    name: ${{ matrix.windows-version }} - Debug
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        windows-version: ['10','11']
-        windows-featurepack: ['22h2-ent', '23h2-ent']
-        exclude:
-        - windows-version: '10'
-          windows-featurepack: '23h2-ent'
-        - windows-version: '11'
-          windows-featurepack: '22h2-ent'
+        windows-version: ['10']
+        windows-featurepack: ['23h2-ent']
 
     steps:
     - name: Set the default env. variables
@@ -90,7 +120,7 @@ jobs:
         # Check logs for the x session
         podman logs x-session
 
-    - name: Build Podman Desktop locally
+    - name: Setup dependencies and build Podman Desktop locally
       run: |
         podman run -d --name pde2e-builder-run \
           -e TARGET_HOST=$(cat host) \
@@ -103,38 +133,40 @@ jobs:
           -v $PWD:/data:z \
           quay.io/odockal/pde2e-builder:v0.0.1-windows  \
               pd-e2e/run.ps1 \
-                  -targetFolder pd-e2e \
-                  -resultsFolder results \
-                  -fork ${{ env.FORK }} \
-                  -branch ${{ env.BRANCH }}
+                -targetFolder pd-e2e \
+                -resultsFolder results \
+                -fork ${{ env.FORK }} \
+                -branch ${{ env.BRANCH }}
         # check logs
         podman logs -f pde2e-builder-run
-        
-    - name: Install Podman via Podman Desktop using GOAX
+
+    - name: Download Podman nightly, do not initialize
       run: |
-        cat results/pde2e-binary-path.log | awk '{print $1}'
-        # Run e2e tests
-        podman run --rm -d --name pd-e2e-windows \
+        podman run --rm -d --name pde2e-podman-run \
           -e TARGET_HOST=$(cat host) \
           -e TARGET_HOST_USERNAME=$(cat username) \
           -e TARGET_HOST_KEY_PATH=/data/id_rsa \
           -e TARGET_FOLDER=pd-e2e \
-          -e TARGET_RESULTS=pd-e2e-results.xml \
+          -e TARGET_RESULTS=results \
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
-          quay.io/rhqp/podman-desktop-e2e:v1.1.0-windows-amd64  \
-              pd-e2e/run.ps1 \
-                  -targetFolder pd-e2e \
-                  -wslInstallFix 'false' \
-                  -junitResultsFilename pd-e2e-results.xml \
-                  -pdPath "$(cat results/pde2e-binary-path.log | tr '\n' " ")"
-        # Check logs 
-        podman logs -f pd-e2e-windows
+          quay.io/odockal/pde2e-podman:v0.0.1-windows  \
+            pd-e2e/run.ps1 \
+              -downloadUrl "${{ github.event.inputs.podman_remote_url }}" \
+              -version "${{ github.event.inputs.podman_version }}" \
+              -targetFolder pd-e2e \
+              -resultsFolder results \
+              -initialize 0 \
+              -rootful 0 \
+              -start 0 \
+              -installWSL 0
+        # check logs
+        podman logs -f pde2e-podman-run
 
     - name: Run Podman Desktop Playwright E2E tests
       env:
-        PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
+        TEST_SECRET: "MySUPERSecret"
       run: |
         podman run -d --name pde2e-runner-run \
           -e TARGET_HOST=$(cat host) \
@@ -147,11 +179,18 @@ jobs:
           -v $PWD:/data:z \
           quay.io/odockal/pde2e-runner:v0.0.1-windows  \
               pd-e2e/run.ps1 \
-                  -targetFolder pd-e2e \
-                  -resultsFolder results \
-                  -fork ${{ env.FORK }} \
-                  -branch ${{ env.BRANCH }} \
-                  -npmTarget ${{ env.NPM_TARGET }}
+                -targetFolder pd-e2e \
+                -resultsFolder results \
+                -podmanPath $(cat results/podman-location.log) \
+                -fork ${{ env.FORK }} \
+                -branch ${{ env.BRANCH }} \
+                -npmTarget ${{ env.NPM_TARGET }} \
+                -initialize "${{ github.event.inputs.podman_initialize }}" \
+                -rootful "${{ github.event.inputs.podman_rootful }}" \
+                -start "${{ github.event.inputs.podman_start }}" \
+                -userNetworking ${{ github.event.inputs.podman_networking }} \
+                -envVars "{{ github.event.inputs.env_vars }}" \
+                -registrySecret $TEST_SECRET
         # check logs
         podman logs -f pde2e-runner-run
 
@@ -186,7 +225,6 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: results-e2e-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
+        name: results-e2e-${{ matrix.windows-version }}-debug
         path: |
           results/*
-          pd-e2e-results.xml

@@ -115,7 +115,7 @@ jobs:
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
-          quay.io/odockal/pde2e-builder:v0.0.1-snapshot  \
+          quay.io/odockal/pde2e-builder:v0.0.1-windows  \
               pd-e2e/run.ps1 \
                 -targetFolder pd-e2e \
                 -resultsFolder results \
@@ -135,7 +135,7 @@ jobs:
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
-          quay.io/odockal/pde2e-podman:v0.0.1-snapshot  \
+          quay.io/odockal/pde2e-podman:v0.0.1-windows  \
             pd-e2e/run.ps1 \
               -downloadUrl "${{ github.event.inputs.podman_remote_url }}" \
               -version "${{ github.event.inputs.podman_version }}" \
@@ -161,7 +161,7 @@ jobs:
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
-          quay.io/odockal/pde2e-runner:v0.0.1-snapshot  \
+          quay.io/odockal/pde2e-runner:v0.0.1-windows  \
               pd-e2e/run.ps1 \
                 -targetFolder pd-e2e \
                 -resultsFolder results \
