@@ -57,7 +57,7 @@ jobs:
           -e ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }} \
           -e ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }} \
           -e ARM_CLIENT_SECRET='${{ secrets.ARM_CLIENT_SECRET }}' \
-          quay.io/rhqp/qenvs:${{ QENVS_VERSION }} azure \
+          quay.io/rhqp/qenvs:${{ env.QENVS_VERSION }} azure \
             windows create \
             --project-name 'windows-desktop' \
             --backed-url 'file:///workspace' \
@@ -173,7 +173,7 @@ jobs:
           -e ARM_SUBSCRIPTION_ID=${{ secrets.ARM_SUBSCRIPTION_ID }} \
           -e ARM_CLIENT_ID=${{ secrets.ARM_CLIENT_ID }} \
           -e ARM_CLIENT_SECRET='${{ secrets.ARM_CLIENT_SECRET }}' \
-          quay.io/rhqp/qenvs:${{ QENVS_VERSION }} azure \
+          quay.io/rhqp/qenvs:${{ env.QENVS_VERSION }} azure \
             windows destroy \
             --project-name 'windows-desktop' \
             --backed-url 'file:///workspace'
