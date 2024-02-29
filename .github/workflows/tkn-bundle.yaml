@@ -6,11 +6,13 @@ on:
     tags:        
       - '*'
     paths-ignore:
-      - '.github/**'
+      - '.github/workflows/**'
+      - '!.github/workflows/tkn-bundle.yaml'
   pull_request:
     branches: [ main ]
     paths-ignore:
-      - '.github/**'
+      - '.github/workflows/**'
+      - '!.github/workflows/tkn-bundle.yaml'
 
 jobs:
   

@@ -1,5 +1,5 @@
-name: Podman Desktop E2E with Podman set
-run-name: Desktop E2E Tests with Podman ${{ github.event.inputs.podman_version }}
+name: Test Workflow Podman Desktop E2E with Podman
+run-name: Debugging Desktop E2E Tests with Podman ${{ github.event.inputs.podman_version }}
 
 on:
   workflow_dispatch:
@@ -29,27 +29,43 @@ on:
         description: 'Podman folder version in archive'
         type: 'string'
         required: true
+      podman_initialize:
+        default: '0'
+        description: 'Initialize Podman Machine'
+        type: 'string'
+        required: true
+      podman_start:
+        default: '0'
+        description: 'Start Podman Machine'
+        type: 'string'
+        required: true
+      podman_rootful:
+        default: '0'
+        description: 'Rootful Podman Machine'
+        type: 'string'
+        required: true
+      podman_networking:
+        default: '0'
+        description: 'User Mode Networking Podman Machine'
+        type: 'string'
+        required: true
+      env_vars:
+        default: 'VAR1=xxx,VAR2=true,VAR3=15'
+        description: 'Env. Variables passed into target machine'
+        type: 'string'
+        required: true
 
 jobs:
   windows:
-    name: ${{ matrix.windows-version }} - ${{ matrix.rootful == '0' && 'rootless' || 'rootful' }} ${{ matrix.user-networking == '1' && '- user mode networking enabled' || '' }}
+    name: ${{ matrix.windows-version }} - Debug
     runs-on: ubuntu-latest
     env:
       QENVS_VERSION: v0.6.3
     strategy:
       fail-fast: false
       matrix:
-        windows-version: ['10','11']
-        windows-featurepack: ['22h2-ent', '23h2-ent']
-        rootful: [0, 1]
-        user-networking: [0, 1]
-        exclude:
-        - windows-version: '10'
-          windows-featurepack: '23h2-ent'
-        - windows-version: '11'
-          windows-featurepack: '22h2-ent'
-        - rootful: 0
-          user-networking: 1
+        windows-version: ['10']
+        windows-featurepack: ['23h2-ent']
 
     steps:
     - name: Set the default env. variables
@@ -126,7 +142,7 @@ jobs:
         # check logs
         podman logs -f pde2e-builder-run
 
-    - name: Download Podman nightly, do not initialize and start
+    - name: Download Podman nightly, do not initialize
       run: |
         podman run --rm -d --name pde2e-podman-run \
           -e TARGET_HOST=$(cat host) \
@@ -152,7 +168,7 @@ jobs:
 
     - name: Run Podman Desktop Playwright E2E tests
       env:
-        PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
+        TEST_SECRET: "MySUPERSecret"
       run: |
         podman run -d --name pde2e-runner-run \
           -e TARGET_HOST=$(cat host) \
@@ -171,10 +187,12 @@ jobs:
                 -fork ${{ env.FORK }} \
                 -branch ${{ env.BRANCH }} \
                 -npmTarget ${{ env.NPM_TARGET }} \
-                -initialize 1 \
-                -start 1 \
-                -rootful ${{ matrix.rootful }} \
-                -userNetworking ${{ matrix.user-networking }}
+                -initialize "${{ github.event.inputs.podman_initialize }}" \
+                -rootful "${{ github.event.inputs.podman_rootful }}" \
+                -start "${{ github.event.inputs.podman_start }}" \
+                -userNetworking ${{ github.event.inputs.podman_networking }} \
+                -envVars "{{ github.event.inputs.env_vars }}" \
+                -registrySecret $TEST_SECRET
         # check logs
         podman logs -f pde2e-runner-run
 
@@ -209,6 +227,6 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: results-e2e-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}-${{ matrix.rootful == '0' && 'rootless' || 'rootful' }}${{ matrix.user-networking == '1' && '-userNetworking' || '' }}
+        name: results-e2e-${{ matrix.windows-version }}-debug
         path: |
           results/*
