@@ -104,7 +104,7 @@ jobs:
           -e DEBUG=true \
           -v $PWD:/data:z \
           quay.io/odockal/pde2e-builder:v0.0.1-windows  \
-              pd-e2e/run.ps1 \
+              pd-e2e/builder.ps1 \
                   -targetFolder pd-e2e \
                   -resultsFolder results \
                   -fork ${{ env.FORK }} \
@@ -138,6 +138,8 @@ jobs:
       env:
         PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
       run: |
+        # echo "PODMANDESKTOP_CI_BOT_TOKEN=${PODMANDESKTOP_CI_BOT_TOKEN}" > secrets.txt
+        echo "PODMANDESKTOP_CI_BOT_TOKEN=xxxxxxxx" > secrets.txt
         podman run -d --name pde2e-runner-run \
           -e TARGET_HOST=$(cat host) \
           -e TARGET_HOST_USERNAME=$(cat username) \
@@ -147,13 +149,16 @@ jobs:
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
+          -v $PWD/secrets.txt:/opt/pde2e-runner/secrets.txt:z \
           quay.io/odockal/pde2e-runner:v0.0.1-windows  \
-              pd-e2e/run.ps1 \
+              pd-e2e/runner.ps1 \
                   -targetFolder pd-e2e \
                   -resultsFolder results \
                   -fork ${{ env.FORK }} \
                   -branch ${{ env.BRANCH }} \
-                  -npmTarget ${{ env.NPM_TARGET }}
+                  -npmTarget ${{ env.NPM_TARGET }} \
+                  -envVars "{{ github.event.inputs.env_vars }}" \
+                  -secretFile secrets.txt
         # check logs
         podman logs -f pde2e-runner-run
 
