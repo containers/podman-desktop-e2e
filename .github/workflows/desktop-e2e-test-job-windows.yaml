@@ -65,7 +65,7 @@ jobs:
       fail-fast: false
       matrix:
         windows-version: ['10']
-        windows-featurepack: ['23h2-ent']
+        windows-featurepack: ['22h2-ent']
 
     steps:
     - name: Set the default env. variables
