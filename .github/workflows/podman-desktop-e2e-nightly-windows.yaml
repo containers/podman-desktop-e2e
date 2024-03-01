@@ -20,6 +20,11 @@ on:
         description: 'npm target to run tests'
         type: string
         required: true
+      env_vars:
+        default: 'VAR1=xxx,VAR2=true,VAR3=15,VAR4="Pass me along"'
+        description: 'Env. Variables passed into target machine'
+        type: 'string'
+        required: true
 
 jobs:
   windows:
@@ -104,7 +109,7 @@ jobs:
           -e DEBUG=true \
           -v $PWD:/data:z \
           quay.io/odockal/pde2e-builder:v0.0.1-windows  \
-              pd-e2e/run.ps1 \
+              pd-e2e/builder.ps1 \
                 -targetFolder pd-e2e \
                 -resultsFolder results \
                 -fork ${{ env.FORK }} \
@@ -124,7 +129,7 @@ jobs:
           -e DEBUG=true \
           -v $PWD:/data:z \
           quay.io/odockal/pde2e-podman:v0.0.1-windows  \
-            pd-e2e/run.ps1 \
+            pd-e2e/podman.ps1 \
               -downloadUrl "https://api.cirrus-ci.com/v1/artifact/github/containers/podman/Artifacts/binary/podman-remote-release-windows_amd64.zip" \
               -version '5.0.0-dev' \
               -targetFolder pd-e2e \
@@ -140,6 +145,8 @@ jobs:
       env:
         PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
       run: |
+        # echo "PODMANDESKTOP_CI_BOT_TOKEN=${PODMANDESKTOP_CI_BOT_TOKEN}" > secrets.txt
+        echo "PODMANDESKTOP_CI_BOT_TOKEN=xxxxxxxx" > secrets.txt
         podman run -d --name pde2e-runner-run \
           -e TARGET_HOST=$(cat host) \
           -e TARGET_HOST_USERNAME=$(cat username) \
@@ -149,8 +156,9 @@ jobs:
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
+          -v $PWD/secrets.txt:/opt/pde2e-runner/secrets.txt:z \
           quay.io/odockal/pde2e-runner:v0.0.1-windows  \
-              pd-e2e/run.ps1 \
+              pd-e2e/runner.ps1 \
                 -targetFolder pd-e2e \
                 -resultsFolder results \
                 -podmanPath $(cat results/podman-location.log) \
@@ -159,7 +167,9 @@ jobs:
                 -npmTarget ${{ env.NPM_TARGET }} \
                 -initialize 1 \
                 -start 1 \
-                -rootful 0
+                -rootful 0 \
+                -envVars "{{ github.event.inputs.env_vars }}" \
+                -secretFile secrets.txt
         # check logs
         podman logs -f pde2e-runner-run
 
