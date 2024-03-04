@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/adrianriobo/goax v0.0.0-20240227173106-4fc2a33d5b9b
-	github.com/onsi/ginkgo/v2 v2.15.0
+	github.com/onsi/ginkgo/v2 v2.16.0
 	github.com/onsi/gomega v1.31.1
 	github.com/spf13/pflag v1.0.5
 )
