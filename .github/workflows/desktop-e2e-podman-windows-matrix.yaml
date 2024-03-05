@@ -183,7 +183,7 @@ jobs:
                 -start 1 \
                 -rootful ${{ matrix.rootful }} \
                 -userNetworking ${{ matrix.user-networking }} \
-                -envVars "{{ github.event.inputs.env_vars }}" \
+                -envVars ${{ github.event.inputs.env_vars }} \
                 -secretFile secrets.txt
         # check logs
         podman logs -f pde2e-runner-run

@@ -168,7 +168,7 @@ jobs:
                 -initialize 1 \
                 -start 1 \
                 -rootful 0 \
-                -envVars "{{ github.event.inputs.env_vars }}" \
+                -envVars ${{ github.event.inputs.env_vars }} \
                 -secretFile secrets.txt
         # check logs
         podman logs -f pde2e-runner-run

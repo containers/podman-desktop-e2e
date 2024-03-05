@@ -157,7 +157,7 @@ jobs:
                   -fork ${{ env.FORK }} \
                   -branch ${{ env.BRANCH }} \
                   -npmTarget ${{ env.NPM_TARGET }} \
-                  -envVars "{{ github.event.inputs.env_vars }}" \
+                  -envVars ${{ github.event.inputs.env_vars }} \
                   -secretFile secrets.txt
         # check logs
         podman logs -f pde2e-runner-run
