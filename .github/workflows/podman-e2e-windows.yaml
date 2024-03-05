@@ -106,9 +106,9 @@ jobs:
           -v $PWD:/data:z \
           quay.io/rhqp/podman-backend-e2e:v4.7.1-windows-amd64 \
               podman-e2e/run.ps1 \
-                  -targetFolder podman-e2e \
-                  -podmanStart "true" \
-                  -junitResultsFilename podman-e2e-results-${tag}.xml 
+                -targetFolder podman-e2e \
+                -podmanStart "true" \
+                -junitResultsFilename podman-e2e-results-${tag}.xml 
         # Check logs 
         podman logs -f podman-e2e
 
