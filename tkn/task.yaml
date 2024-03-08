@@ -52,6 +52,9 @@ spec:
   - name: worspace-qe-subpath
     description: subpath relative to workspace path where results are stored
     default: qe-results
+  - name: results-folder
+    description: folder to include all results for the execution
+    default: pd-e2e-results
   - name: junit-filename
     description: filename for the junit file holding the e2e results
     default: podman-desktop-e2e.xml
@@ -80,7 +83,7 @@ spec:
       TARGET_HOST_KEY_PATH=$(workspaces.pipelines-data.path)/$(params.workspace-resources-path)/$(params.key)
       chmod 600 ${TARGET_HOST_KEY_PATH}
       TARGET_FOLDER=podman-desktop-e2e
-      TARGET_RESULTS=$(params.junit-filename)
+      TARGET_RESULTS=$(params.results-folder)
       TARGET_CLEANUP=$(params.target-cleanup)
       OUTPUT_FOLDER=$(workspaces.pipelines-data.path)/$(params.workspace-resources-path)/$(params.worspace-qe-subpath)
       mkdir -p "${OUTPUT_FOLDER}"
@@ -95,6 +98,7 @@ spec:
         else 
           cmd="${cmd} -pdPath $(params.pd-path) "
         fi
+        cmd="$cmd -resultsFolder $(params.results-folder) "
       fi
       if [[ $(params.os) == "darwin" ]]; then
         cmd="USER_PASSWORD=$(params.userpassword) "
@@ -105,6 +109,7 @@ spec:
         else 
           cmd="${cmd} PD_PATH=$(params.pd-path) "
         fi
+        cmd="${cmd} RESULTS_FOLDER=$(params.results-folder) "
         cmd="$cmd ${TARGET_FOLDER}/run.sh"
       fi
       
