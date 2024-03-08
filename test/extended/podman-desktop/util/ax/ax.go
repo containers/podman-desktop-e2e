@@ -6,6 +6,9 @@ import (
 
 	autoApp "github.com/adrianriobo/goax/pkg/goax/app"
 	"github.com/adrianriobo/goax/pkg/util/delay"
+	"github.com/adrianriobo/goax/pkg/util/logging"
+	"github.com/adrianriobo/goax/pkg/util/screenshot"
+	"github.com/containers/podman-desktop-e2e/test/context"
 )
 
 // Represents any ax app
@@ -43,6 +46,12 @@ func (a *AXApp) ClickWithType(element, elementType string, delayAmount time.Dura
 		return fmt.Errorf("error clicking on %s: %v", element, err)
 	}
 	delay.Delay(delayAmount)
+	if context.SaveScreenshots() {
+		if err := screenshot.CaptureScreen(context.TestContext.ScreenshotsOutputPath,
+			fmt.Sprintf("click-%s%s", element, elementType)); err != nil {
+			logging.Errorf("error capturing the screenshot: %v", err)
+		}
+	}
 	return nil
 }
 
@@ -51,6 +60,12 @@ func (a *AXApp) ExistsWithType(element, elementType string) (bool, error) {
 	r, err := a.ref.Reload()
 	if err != nil {
 		return false, fmt.Errorf("error reloading the application: %v", err)
+	}
+	if context.SaveScreenshots() {
+		if err := screenshot.CaptureScreen(context.TestContext.ScreenshotsOutputPath,
+			fmt.Sprintf("exists-%s%s", element, elementType)); err != nil {
+			logging.Errorf("error capturing the screenshot: %v", err)
+		}
 	}
 	return r.Exists(element, elementType, false)
 }

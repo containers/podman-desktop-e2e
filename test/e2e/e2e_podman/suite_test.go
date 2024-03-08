@@ -12,16 +12,9 @@ import (
 	"github.com/onsi/gomega"
 	"github.com/spf13/pflag"
 
+	"github.com/containers/podman-desktop-e2e/test/context"
 	podmanDesktop "github.com/containers/podman-desktop-e2e/test/extended/podman-desktop"
 )
-
-type TestContextType struct {
-	UserPassword        string
-	JunitReportFilename string
-	AppPath             string
-}
-
-var TestContext TestContextType
 
 func TestMain(m *testing.M) {
 	RegisterCommonFlags(flag.CommandLine)
@@ -54,9 +47,10 @@ func CreateGinkgoConfig() (types.SuiteConfig, types.ReporterConfig) {
 }
 
 func RegisterCommonFlags(flags *flag.FlagSet) {
-	flags.StringVar(&TestContext.AppPath, "pd-path", "", "Set the user password to be used within the tests.")
-	flags.StringVar(&TestContext.UserPassword, "user-password", "", "Set the user password to be used within the tests.")
-	flags.StringVar(&TestContext.JunitReportFilename, "junit-filename", "", "Set the filename for the junit report.")
+	flags.StringVar(&context.TestContext.AppPath, "pd-path", "", "Set the user password to be used within the tests.")
+	flags.StringVar(&context.TestContext.UserPassword, "user-password", "", "Set the user password to be used within the tests.")
+	flags.StringVar(&context.TestContext.JunitReportFilename, "junit-filename", "", "Set the filename for the junit report.")
+	flags.StringVar(&context.TestContext.ScreenshotsOutputPath, "screenshotspath", "", "Set the path to save screenshots.")
 }
 
 func AfterReadingAllFlags() {
@@ -65,7 +59,7 @@ func AfterReadingAllFlags() {
 
 // INFO Inspired by https://github.com/kubernetes/kubernetes/blob/07315d10b3718973e5ebcc61cbf0fba8a6ec58a9/test/e2e/framework/test_context.go#LL535C1-L573C2
 func writeJUnitReport(report ginkgo.Report) {
-	filename := TestContext.JunitReportFilename
+	filename := context.TestContext.JunitReportFilename
 	if len(filename) == 0 {
 		filename = generateDefaultJunitReportName()
 	}
@@ -95,7 +89,7 @@ var _ = ginkgo.BeforeSuite(func() {
 	// gomega.Expect(err).NotTo(gomega.HaveOccurred())
 	// Open the app with param from exec
 	var err error
-	PDHandler, err = podmanDesktop.Open(TestContext.AppPath)
+	PDHandler, err = podmanDesktop.Open(context.TestContext.AppPath)
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 	// First run will show welcome page
 	err = PDHandler.WelcomePageDisableTelemetry()
