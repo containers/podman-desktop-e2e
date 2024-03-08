@@ -29,9 +29,19 @@ on:
         description: 'Podman folder version in archive'
         type: 'string'
         required: true
+      podman_initialize:
+        default: '1'
+        description: 'Initialize Podman Machine'
+        type: 'string'
+        required: true
+      podman_start:
+        default: '1'
+        description: 'Start Podman Machine'
+        type: 'string'
+        required: true
       env_vars:
-        default: 'VAR1=xxx,VAR2=true,VAR3=15,VAR4="Pass me along"'
-        description: 'Env. Variables passed into target machine'
+        default: 'TEST_PODMAN_MACHINE=true'
+        description: 'Env. Variables passed into target machine, ie: VAR1=xxx,VAR2=true,VAR3=15,VAR4="Pass me along"'
         type: 'string'
         required: true
 
@@ -178,8 +188,8 @@ jobs:
                 -fork ${{ env.FORK }} \
                 -branch ${{ env.BRANCH }} \
                 -npmTarget ${{ env.NPM_TARGET }} \
-                -initialize 1 \
-                -start 1 \
+                -initialize ${{ github.event.inputs.podman_initialize }} \
+                -start ${{ github.event.inputs.podman_start }} \
                 -rootful ${{ matrix.rootful }} \
                 -userNetworking ${{ matrix.user-networking }} \
                 -envVars ${{ github.event.inputs.env_vars }} \

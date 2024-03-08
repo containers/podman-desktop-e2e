@@ -50,8 +50,8 @@ on:
         type: 'string'
         required: true
       env_vars:
-        default: 'VAR1=xxx,VAR2=true,VAR3=15,VAR4="Pass me along"'
-        description: 'Env. Variables passed into target machine'
+        default: 'TEST_PODMAN_MACHINE=true'
+        description: 'Env. Variables passed into target machine, ie: VAR1=xxx,VAR2=true,VAR3=15,VAR4="Pass me along"'
         type: 'string'
         required: true
 
