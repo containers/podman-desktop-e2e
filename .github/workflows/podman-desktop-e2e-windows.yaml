@@ -20,6 +20,11 @@ on:
         description: 'npm target to run tests'
         type: string
         required: true
+      env_vars:
+        default: 'TEST_PODMAN_MACHINE=true'
+        description: 'Env. Variables passed into target machine'
+        type: 'string'
+        required: true
 
 jobs:
   windows:
@@ -43,10 +48,12 @@ jobs:
         DEFAULT_FORK: 'containers'
         DEFAULT_BRANCH: 'main'
         DEFAULT_NPM_TARGET: 'test:e2e'
+        DEFAULT_ENV_VARS: 'TEST_PODMAN_MACHINE=true'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
         echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
         echo "NPM_TARGET=${{ github.event.inputs.npm_target || env.DEFAULT_NPM_TARGET }}" >> $GITHUB_ENV
+        echo "ENV_VARS=${{ github.event.inputs.env_vars || env.DEFAULT_ENV_VARS }}" >> $GITHUB_ENV
 
     - name: Create instance
       run: |
