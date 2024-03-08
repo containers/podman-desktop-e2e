@@ -74,7 +74,7 @@ jobs:
           -e TARGET_HOST_USERNAME=$(cat username) \
           -e TARGET_HOST_KEY_PATH=/data/id_rsa \
           -e TARGET_FOLDER=pd-e2e \
-          -e TARGET_RESULTS=podman-desktop-e2e-results-${tag}.xml \
+          -e TARGET_RESULTS=pd-e2e-results \
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
@@ -83,7 +83,8 @@ jobs:
                   -wslInstallFix 'false' \
                   -targetFolder pd-e2e \
                   -pdUrl "https://github.com/containers/podman-desktop/releases/download/${tag}/podman-desktop-${tag:1}.exe" \
-                  -junitResultsFilename podman-desktop-e2e-results-${tag}.xml 
+                  -junitResultsFilename podman-desktop-e2e-results-${tag}.xml \
+                  -resultsFolder pd-e2e-results
         # Check logs 
         podman logs -f pd-e2e-windows
 
@@ -144,7 +145,4 @@ jobs:
         name: E2E-results-windows-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
         path: |
           podman-e2e-results-*.xml
-          podman-desktop-e2e-results-*.xml
-
-
-        
+          pd-e2e-results/*

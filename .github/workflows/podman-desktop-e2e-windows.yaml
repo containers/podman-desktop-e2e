@@ -119,7 +119,7 @@ jobs:
           -e TARGET_HOST_USERNAME=$(cat username) \
           -e TARGET_HOST_KEY_PATH=/data/id_rsa \
           -e TARGET_FOLDER=pd-e2e \
-          -e TARGET_RESULTS=pd-e2e-results.xml \
+          -e TARGET_RESULTS=pd-e2e-results \
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
@@ -128,7 +128,8 @@ jobs:
                   -targetFolder pd-e2e \
                   -wslInstallFix 'false' \
                   -junitResultsFilename pd-e2e-results.xml \
-                  -pdPath "$(cat results/pde2e-binary-path.log | tr '\n' " ")"
+                  -pdPath "$(cat results/pde2e-binary-path.log | tr '\n' " ")" \
+                  -resultsFolder pd-e2e-results
         # Check logs 
         podman logs -f pd-e2e-windows
 
@@ -189,4 +190,4 @@ jobs:
         name: results-e2e-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
         path: |
           results/*
-          pd-e2e-results.xml
+          pd-e2e-results/*
