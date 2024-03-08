@@ -6,6 +6,8 @@ import (
 	autoApp "github.com/adrianriobo/goax/pkg/goax/app"
 	"github.com/adrianriobo/goax/pkg/util/delay"
 	"github.com/adrianriobo/goax/pkg/util/logging"
+	"github.com/adrianriobo/goax/pkg/util/screenshot"
+	"github.com/containers/podman-desktop-e2e/test/context"
 	podmanExtension "github.com/containers/podman-desktop-e2e/test/extended/podman-desktop/extension/podman"
 	"github.com/containers/podman-desktop-e2e/test/extended/podman-desktop/util/ax"
 )
@@ -32,6 +34,11 @@ func Open(execPath string) (*PDApp, error) {
 	}
 	// We open remotely so we wait for a bit
 	delay.Delay(delay.LONG)
+	if context.SaveScreenshots() {
+		if err := screenshot.CaptureScreen(context.TestContext.ScreenshotsOutputPath, "openApp"); err != nil {
+			logging.Errorf("error capturing the screenshot: %v", err)
+		}
+	}
 	a, err := ax.GetForefront()
 	if err != nil {
 		return nil, fmt.Errorf("error opening the podman desktop executable at %s: %v", execPath, err)
