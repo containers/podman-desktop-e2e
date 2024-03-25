@@ -57,7 +57,7 @@ github.com/kbinani/screenshot/internal/xwindow
 # github.com/lxn/win v0.0.0-20210218163916-a377121e959e
 ## explicit; go 1.12
 github.com/lxn/win
-# github.com/onsi/ginkgo/v2 v2.16.0
+# github.com/onsi/ginkgo/v2 v2.17.1
 ## explicit; go 1.20
 github.com/onsi/ginkgo/v2
 github.com/onsi/ginkgo/v2/config
