@@ -3,7 +3,7 @@ module github.com/containers/podman-desktop-e2e
 go 1.20
 
 require (
-	github.com/adrianriobo/goax v0.1.0
+	github.com/adrianriobo/goax v0.1.1
 	github.com/onsi/ginkgo/v2 v2.16.0
 	github.com/onsi/gomega v1.32.0
 	github.com/spf13/pflag v1.0.5
