@@ -20,12 +20,12 @@ on:
         type: string
         required: true
       podman_remote_url:
-        default: 'https://github.com/containers/podman/releases/download/v4.9.0/podman-remote-release-windows_amd64.zip'
+        default: 'https://github.com/containers/podman/releases/download/v4.9.3/podman-remote-release-windows_amd64.zip'
         description: 'podman remote zip'
         type: string
         required: true
       podman_version:
-        default: '4.9.0'
+        default: '4.9.3'
         description: 'Podman folder version in archive'
         type: 'string'
         required: true
@@ -59,6 +59,9 @@ jobs:
   windows:
     name: ${{ matrix.windows-version }} - Debug
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     env:
       QENVS_VERSION: v0.6.3
     strategy:
