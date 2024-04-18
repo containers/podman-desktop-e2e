@@ -2,7 +2,7 @@ name: Podman Desktop SSO E2E Nightly
 
 on:
   schedule:
-    - cron:  '0 6 * * *'
+    - cron:  '0 4 * * *'
   workflow_dispatch:
     inputs:
       fork:
@@ -21,7 +21,7 @@ on:
         type: string
         required: true
       ext_tests:
-        default: '0'
+        default: '1'
         description: 'Run E2E tests from extension'
         type: string
         required: true
