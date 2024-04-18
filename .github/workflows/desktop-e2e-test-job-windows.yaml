@@ -14,6 +14,26 @@ on:
         description: 'Podman Desktop repo branch'
         type: string
         required: true
+      ext_repo:
+        default: 'podman-desktop-redhat-account-ext'
+        description: 'Podman Desktop extension repository'
+        type: string
+        required: true
+      ext_fork:
+        default: 'redhat-developer'
+        description: 'Podman Desktop Extension repo fork'
+        type: string
+        required: true
+      ext_branch:
+        default: 'main'
+        description: 'Podman Desktop Extension repo branch'
+        type: string
+        required: true
+      ext_tests:
+        default: '0'
+        description: 'Run E2E tests from extension'
+        type: string
+        required: true
       npm_target:
         default: 'test:e2e'
         description: 'npm target to run tests'
@@ -75,11 +95,19 @@ jobs:
       env:
         DEFAULT_FORK: 'containers'
         DEFAULT_BRANCH: 'main'
+        DEFAULT_EXT_REPO: 'podman-desktop-redhat-account-ext'
+        DEFAULT_EXT_FORK: 'redhat-developer'
+        DEFAULT_EXT_BRANCH: 'main'
+        DEFAULT_EXT_TESTS: '0'
         DEFAULT_NPM_TARGET: 'test:e2e'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
         echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
         echo "NPM_TARGET=${{ github.event.inputs.npm_target || env.DEFAULT_NPM_TARGET }}" >> $GITHUB_ENV
+        echo "EXT_REPO=${{ github.event.inputs.ext_repo || env.DEFAULT_EXT_REPO }}" >> $GITHUB_ENV
+        echo "EXT_FORK=${{ github.event.inputs.ext_fork || env.DEFAULT_EXT_FORK }}" >> $GITHUB_ENV
+        echo "EXT_BRANCH=${{ github.event.inputs.ext_branch || env.DEFAULT_EXT_BRANCH }}" >> $GITHUB_ENV
+        echo "EXT_TESTS=${{ github.event.inputs.ext_tests || env.DEFAULT_EXT_TESTS }}" >> $GITHUB_ENV
 
     - name: Create instance
       run: |
@@ -191,6 +219,10 @@ jobs:
                 -podmanPath $(cat results/podman-location.log) \
                 -fork ${{ env.FORK }} \
                 -branch ${{ env.BRANCH }} \
+                -extRepo ${{ env.EXT_REPO }} \
+                -extFork ${{ env.EXT_FORK }} \
+                -extBranch ${{ env.EXT_BRANCH }} \
+                -extTests ${{ env.EXT_TESTS }} \
                 -npmTarget ${{ env.NPM_TARGET }} \
                 -initialize ${{ github.event.inputs.podman_initialize }} \
                 -rootful ${{ github.event.inputs.podman_rootful }} \
