@@ -30,12 +30,12 @@ on:
         type: string
         required: true
       podman_remote_url:
-        default: 'https://github.com/containers/podman/releases/download/v4.9.3/podman-remote-release-windows_amd64.zip'
+        default: 'https://github.com/containers/podman/releases/download/v5.0.3/podman-remote-release-windows_amd64.zip'
         description: 'podman remote zip'
         type: string
         required: true
       podman_version:
-        default: '4.9.3'
+        default: '5.0.3'
         description: 'Podman folder version in archive'
         type: 'string'
         required: true
