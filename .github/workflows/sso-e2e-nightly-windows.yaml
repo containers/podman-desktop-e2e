@@ -31,12 +31,12 @@ on:
         type: string
         required: true
       podman_remote_url:
-        default: 'https://github.com/containers/podman/releases/download/v5.0.2/podman-remote-release-windows_amd64.zip'
+        default: 'https://github.com/containers/podman/releases/download/v5.0.3/podman-remote-release-windows_amd64.zip'
         description: 'podman remote zip'
         type: string
         required: true
       podman_version:
-        default: '5.0.2'
+        default: '5.0.3'
         description: 'Podman folder version in archive'
         type: 'string'
         required: true
@@ -53,7 +53,7 @@ on:
 
 jobs:
   windows:
-    name: ${{ matrix.windows-version }} - Debug
+    name: windows-${{ matrix.windows-version }}-${{ matrix.windows-featurepack }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -71,21 +71,29 @@ jobs:
         - windows-version: '11'
           windows-featurepack: '22h2-ent'
 
+
     steps:
+    - name: Get Podman version used by Desktop
+      run: |
+        version=$(curl https://raw.githubusercontent.com/containers/podman-desktop/main/extensions/podman/src/podman5.json | jq -r '.version')
+        echo "Default Podman Version from Podman Desktop: ${version}"
+        echo "PD_PODMAN_VERSION=${version}" >> $GITHUB_ENV
     - name: Set the default env. variables
       env:
         DEFAULT_FORK: 'containers'
         DEFAULT_BRANCH: 'main'
-        DEFAULT_EXT_TESTS: '0'
+        DEFAULT_EXT_TESTS: '1'
         DEFAULT_NPM_TARGET: 'test:e2e'
+        DEFAULT_ENV_VARS: 'TEST_PODMAN_MACHINE=true'
         DEFAULT_PODMAN_OPTIONS: 'INIT=1,START=1,ROOTFUL=1,NETWORKING=0'
-        DEFAULT_EXT_REPO_OPTIONS: 'REPO=podman-desktop-redhat-account-ext,FORK=redhat-developer,BRANCH=main'
-        DEFAULT_VERSION: '5.0.2'
-        DEFAULT_URL: 'https://github.com/containers/podman/releases/download/v5.0.2/podman-remote-release-windows_amd64.zip'
+        DEFAULT_EXT_REPO_OPTIONS: 'REPO=podman-desktop-extension-bootc,FORK=containers,BRANCH=main'
+        DEFAULT_VERSION: "${{ env.PD_PODMAN_VERSION || '5.0.3' }}"
+        DEFAULT_URL: "https://github.com/containers/podman/releases/download/v$DEFAULT_VERSION/podman-remote-release-windows_amd64.zip"
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
         echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
         echo "NPM_TARGET=${{ github.event.inputs.npm_target || env.DEFAULT_NPM_TARGET }}" >> $GITHUB_ENV
+        echo "ENV_VARS=${{ github.event.inputs.env_vars || env.DEFAULT_ENV_VARS }}" >> $GITHUB_ENV
         echo "PODMAN_VERSION=${{ github.event.inputs.podman_version || env.DEFAULT_VERSION }}" >> $GITHUB_ENV
         echo "PODMAN_URL=${{ github.event.inputs.podman_remote_url || env.DEFAULT_URL }}" >> $GITHUB_ENV
         echo "EXT_TESTS=${{ github.event.inputs.ext_tests || env.DEFAULT_EXT_TESTS }}" >> $GITHUB_ENV
@@ -193,7 +201,7 @@ jobs:
                 -rootful ${{ env.PODMAN_ROOTFUL }} \
                 -start ${{ env.PODMAN_START }} \
                 -userNetworking ${{ env.PODMAN_NETWORKING }} \
-                -envVars ${{ github.event.inputs.env_vars }} \
+                -envVars ${{ env.ENV_VARS }} \
                 -secretFile secrets.txt
         # check logs
         podman logs -f pde2e-runner-run
