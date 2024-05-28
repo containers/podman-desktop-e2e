@@ -181,6 +181,7 @@ jobs:
           -e TARGET_HOST_KEY_PATH=/data/id_rsa \
           -e TARGET_FOLDER=pd-e2e \
           -e TARGET_RESULTS=results \
+          -e TARGET_CLEANUP=false \
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
