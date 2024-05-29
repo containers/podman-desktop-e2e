@@ -49,6 +49,9 @@ jobs:
   windows:
     name: ${{ matrix.windows-version }} - ${{ matrix.rootful == '0' && 'rootless' || 'rootful' }} ${{ matrix.user-networking == '1' && '- user mode networking enabled' || '' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     env:
       QENVS_VERSION: v0.6.3
     strategy:
