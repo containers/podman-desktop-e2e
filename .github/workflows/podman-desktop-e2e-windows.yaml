@@ -29,6 +29,9 @@ on:
 jobs:
   windows:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     env:
       QENVS_VERSION: v0.6.3
     strategy:
