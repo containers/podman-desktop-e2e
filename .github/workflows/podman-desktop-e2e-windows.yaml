@@ -144,7 +144,7 @@ jobs:
           quay.io/rhqp/podman-desktop-e2e:v1.1.0-windows-amd64  \
               pd-e2e/run.ps1 \
                   -targetFolder pd-e2e \
-                  -wslInstallFix 'false' \
+                  -wslInstallFix 'true' \
                   -junitResultsFilename pd-e2e-results.xml \
                   -pdPath "$(cat results/pde2e-binary-path.log | tr '\n' " ")" \
                   -resultsFolder pd-e2e-results
