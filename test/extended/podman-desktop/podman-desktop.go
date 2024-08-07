@@ -33,7 +33,7 @@ func Open(execPath string) (*PDApp, error) {
 		return nil, fmt.Errorf("error opening the podman desktop executable at %s: %v", execPath, err)
 	}
 	// We open remotely so we wait for a bit
-	delay.Delay(delay.LONG)
+	delay.Delay(delay.XLONG)
 	if context.SaveScreenshots() {
 		if err := screenshot.CaptureScreen(context.TestContext.ScreenshotsOutputPath, "openApp"); err != nil {
 			logging.Errorf("error capturing the screenshot: %v", err)
