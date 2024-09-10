@@ -188,7 +188,7 @@ jobs:
                 -npmTarget ${{ env.NPM_TARGET }} \
                 -initialize 1 \
                 -start 1 \
-                -rootful 0 \
+                -rootful 1 \
                 -envVars ${{ env.ENV_VARS }} \
                 -secretFile secrets.txt
         # check logs
