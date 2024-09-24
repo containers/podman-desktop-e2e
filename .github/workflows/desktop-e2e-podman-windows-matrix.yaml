@@ -1,5 +1,5 @@
 name: Podman Desktop E2E with Podman set
-run-name: Desktop E2E Tests with Podman ${{ github.event.inputs.podman_version }}
+run-name: Desktop E2E Tests with Podman
 
 on:
   workflow_dispatch:
@@ -23,11 +23,6 @@ on:
         default: 'https://github.com/containers/podman/releases/download/v5.0.3/podman-remote-release-windows_amd64.zip'
         description: 'podman remote zip'
         type: string
-        required: true
-      podman_version:
-        default: '5.0.3'
-        description: 'Podman folder version in archive'
-        type: 'string'
         required: true
       podman_initialize:
         default: '1'
@@ -161,7 +156,6 @@ jobs:
           quay.io/odockal/pde2e-podman:v0.0.1-windows  \
             pd-e2e/podman.ps1 \
               -downloadUrl "${{ github.event.inputs.podman_remote_url }}" \
-              -version "${{ github.event.inputs.podman_version }}" \
               -targetFolder pd-e2e \
               -resultsFolder results \
               -initialize 0 \
