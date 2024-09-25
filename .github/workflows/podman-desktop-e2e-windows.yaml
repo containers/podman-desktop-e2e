@@ -1,4 +1,5 @@
 name: Podman Desktop E2E with Podman installation
+run-name: Podman Desktop E2E with Podman installation ${{ inputs.debug == 'true' && '- Debug' || '' }}
 
 on:
   schedule:
@@ -25,6 +26,12 @@ on:
         description: 'Env. Variables passed into target machine'
         type: 'string'
         required: true
+      debug:
+        description: 'For debugging to restrict what is run'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
   windows:
@@ -45,6 +52,8 @@ jobs:
           windows-featurepack: '23h2-ent'
         - windows-version: '11'
           windows-featurepack: '22h2-ent'
+        - windows-version: ${{ (github.event.inputs.debug && github.event.inputs.debug == 'true') && '11' || 'N/A' }}
+          windows-featurepack: ${{ (github.event.inputs.debug && github.event.inputs.debug == 'true') && '23h2-ent' || 'N/A' }}
 
     steps:
     - name: Set the default env. variables
@@ -152,6 +161,7 @@ jobs:
         podman logs -f pd-e2e-windows
 
     - name: Run Podman Desktop Playwright E2E tests
+      if: ${{ !github.event.inputs.debug || github.event.inputs.debug == 'false' }}
       env:
         PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
       run: |
