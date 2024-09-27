@@ -51,10 +51,10 @@ func Open(execPath string) (*PDApp, error) {
 func (p *PDApp) WelcomePageDisableTelemetry() error {
 	exists, err := p.ExistsWithType(welcomePageEnableTelemetry, "checkbox")
 	if err != nil || !exists {
-		return fmt.Errorf("error disabling telemetry :%v", err)
+		return fmt.Errorf("error disabling telemetry, check for existence :%v", err)
 	}
-	if err := p.ClickWithType(welcomePageEnableTelemetry, "checkbox", delay.SMALL); err != nil {
-		return fmt.Errorf("error disabling telemetry: %v", err)
+	if err := p.ClickWithType(welcomePageEnableTelemetry, "checkbox", delay.LONG); err != nil {
+		return fmt.Errorf("error disabling telemetry, clicking checkbox: %v", err)
 	}
 	return nil
 }
