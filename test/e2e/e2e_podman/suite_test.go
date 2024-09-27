@@ -10,6 +10,7 @@ import (
 	"github.com/onsi/ginkgo/v2/reporters"
 	"github.com/onsi/ginkgo/v2/types"
 	"github.com/onsi/gomega"
+	"github.com/adrianriobo/goax/pkg/util/delay"
 	"github.com/spf13/pflag"
 
 	"github.com/containers/podman-desktop-e2e/test/context"
@@ -91,6 +92,7 @@ var _ = ginkgo.BeforeSuite(func() {
 	var err error
 	PDHandler, err = podmanDesktop.Open(context.TestContext.AppPath)
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
+	delay.Delay(delay.LONG)
 	// First run will show welcome page
 	err = PDHandler.WelcomePageDisableTelemetry()
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
