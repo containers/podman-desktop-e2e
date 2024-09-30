@@ -39,6 +39,11 @@ on:
         description: 'Env. Variables passed into target machine, ie: VAR1=xxx,VAR2=true,VAR3=15,VAR4="Pass me along"'
         type: 'string'
         required: true
+      images_version:
+        default: 'BUILDER="v0.0.2",PODMAN="v0.0.2",RUNNER="v0.0.2"'
+        description: 'Testing images versions, no spaces'
+        type: 'string'
+        required: true
 
 jobs:
   windows:
@@ -71,10 +76,16 @@ jobs:
         DEFAULT_FORK: 'containers'
         DEFAULT_BRANCH: 'main'
         DEFAULT_NPM_TARGET: 'test:e2e'
+        DEFAULT_IMAGES_VERSIONS: 'BUILDER="v0.0.1",PODMAN="v0.0.1",RUNNER="v0.0.1"'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
         echo "BRANCH=${{ github.event.inputs.branch || env.DEFAULT_BRANCH }}" >> $GITHUB_ENV
         echo "NPM_TARGET=${{ github.event.inputs.npm_target || env.DEFAULT_NPM_TARGET }}" >> $GITHUB_ENV
+        echo "${{ github.event.inputs.images_version || env.DEFAULT_IMAGES_VERSIONS }}" | awk -F ',' \
+         '{for (i=1; i<=NF; i++) {split($i, kv, "="); print "PDE2E_"kv[1]"="kv[2]}}' >> $GITHUB_ENV
+        echo "${{ github.event.inputs.images_version || env.DEFAULT_IMAGES_VERSIONS }}" | awk -F ',' \
+        '{for (i=1; i<=NF; i++) {split($i, kv, "="); print "PDE2E_"kv[1]"="kv[2]}}' >> $GITHUB_ENV
+        
 
     - name: Create instance
       run: |
@@ -132,7 +143,7 @@ jobs:
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
-          quay.io/odockal/pde2e-builder:v0.0.1-windows  \
+          quay.io/odockal/pde2e-builder:${{ env.PDE2E_BUILDER }}-windows  \
               pd-e2e/builder.ps1 \
                 -targetFolder pd-e2e \
                 -resultsFolder results \
@@ -153,7 +164,7 @@ jobs:
           -e OUTPUT_FOLDER=/data \
           -e DEBUG=true \
           -v $PWD:/data:z \
-          quay.io/odockal/pde2e-podman:v0.0.1-windows  \
+          quay.io/odockal/pde2e-podman:${{ env.PDE2E_PODMAN }}-windows  \
             pd-e2e/podman.ps1 \
               -downloadUrl "${{ github.event.inputs.podman_remote_url }}" \
               -targetFolder pd-e2e \
@@ -180,7 +191,7 @@ jobs:
           -e DEBUG=true \
           -v $PWD:/data:z \
           -v $PWD/secrets.txt:/opt/pde2e-runner/secrets.txt:z \
-          quay.io/odockal/pde2e-runner:v0.0.1-windows  \
+          quay.io/odockal/pde2e-runner:${{ env.PDE2E_RUNNER }}-windows  \
               pd-e2e/runner.ps1 \
                 -targetFolder pd-e2e \
                 -resultsFolder results \
