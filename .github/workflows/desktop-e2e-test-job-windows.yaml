@@ -46,8 +46,8 @@ on:
         description: 'Env. Variables passed into target machine, ie: VAR1=xxx,VAR2=true,VAR3=15,VAR4="Pass me along"'
         type: 'string'
         required: true
-      images_version: 
-        default: 'BUILDER="v0.0.1",PODMAN="v0.0.1",RUNNER="v0.0.1"'
+      images_version:
+        default: 'BUILDER="v0.0.2",PODMAN="v0.0.2",RUNNER="v0.0.2"'
         description: 'Testing images versions, no spaces'
         type: 'string'
         required: true
@@ -76,7 +76,7 @@ jobs:
         DEFAULT_PODMAN_OPTIONS: 'INIT=1,START=1,ROOTFUL=1,NETWORKING=0'
         DEFAULT_EXT_REPO_OPTIONS: 'REPO=podman-desktop-redhat-account-ext,FORK=redhat-developer,BRANCH=main'
         DEFAULT_PD_REPO_OPTIONS: 'REPO=podman-desktop,FORK=containers,BRANCH=main'
-        DEFAULT_IMAGES_VERSIONS: 'BUILDER="v0.0.1",PODMAN="v0.0.1",RUNNER="v0.0.1"'
+        DEFAULT_IMAGES_VERSIONS: 'BUILDER="v0.0.2",PODMAN="v0.0.2",RUNNER="v0.0.2"'
       run: |
         echo "NPM_TARGET=${{ github.event.inputs.npm_target || env.DEFAULT_NPM_TARGET }}" >> $GITHUB_ENV
         echo "EXT_TESTS=${{ github.event.inputs.ext_tests || env.DEFAULT_EXT_TESTS }}" >> $GITHUB_ENV
