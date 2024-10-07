@@ -102,12 +102,14 @@ jobs:
 
     - name: Log in to quay.io Registry
       uses: redhat-actions/podman-login@v1
+      if: github.event_name == 'push'
       with:
         registry: quay.io
         username: ${{ secrets.QUAY_IO_USERNAME }}
         password: ${{ secrets.QUAY_IO_PASSWORD }}
 
     - name: Push image
+      if: github.event_name == 'push'
       shell: bash
       run: OS=${{ matrix.os }} ARCH=${{ matrix.arch }} make oci-push
 
@@ -144,12 +146,14 @@ jobs:
 
     - name: Log in to quay.io Registry
       uses: redhat-actions/podman-login@v1
+      if: github.event_name == 'push'
       with:
         registry: quay.io
         username: ${{ secrets.QUAY_IO_USERNAME }}
         password: ${{ secrets.QUAY_IO_PASSWORD }}
 
     - name: Push image
+      if: github.event_name == 'push'
       shell: bash
       run: OS=${{ matrix.os }} ARCH=${{ matrix.arch }} make oci-push
         

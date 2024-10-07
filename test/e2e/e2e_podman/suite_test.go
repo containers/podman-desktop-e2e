@@ -17,6 +17,7 @@ import (
 	podmanDesktop "github.com/containers/podman-desktop-e2e/test/extended/podman-desktop"
 )
 
+// Main test part execution
 func TestMain(m *testing.M) {
 	RegisterCommonFlags(flag.CommandLine)
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
@@ -92,6 +93,7 @@ var _ = ginkgo.BeforeSuite(func() {
 	var err error
 	PDHandler, err = podmanDesktop.Open(context.TestContext.AppPath)
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
+	// prolong the delay to wait for podman desktop to start up, on windows might take long
 	delay.Delay(delay.LONG)
 	// First run will show welcome page
 	err = PDHandler.WelcomePageDisableTelemetry()
