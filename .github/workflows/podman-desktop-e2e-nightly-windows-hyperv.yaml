@@ -196,7 +196,9 @@ jobs:
                 -initialize 1 \
                 -start 1 \
                 -rootful 1 \
-                -podmanProvider ${{ env.PODMAN_PROVIDER }}
+                -podmanProvider ${{ env.PODMAN_PROVIDER }} \
+                -envVars ${{ env.ENV_VARS }} \
+                -secretFile secrets.txt
         # check logs
         podman logs -f pde2e-runner-run
 
