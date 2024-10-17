@@ -2,7 +2,7 @@ module github.com/containers/podman-desktop-e2e
 
 go 1.22.0
 
-toolchain go1.22.7
+toolchain go1.23.2
 
 require (
 	github.com/adrianriobo/goax v0.1.2
