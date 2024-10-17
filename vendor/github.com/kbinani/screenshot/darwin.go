@@ -1,17 +1,76 @@
-// +build darwin,!go1.10
+//go:build cgo && darwin
 
 package screenshot
 
-// #cgo LDFLAGS: -framework CoreGraphics -framework CoreFoundation
-// #include <CoreGraphics/CoreGraphics.h>
+/*
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ > MAC_OS_VERSION_14_4
+#cgo CFLAGS: -x objective-c
+#cgo LDFLAGS: -framework CoreGraphics -framework CoreFoundation -framework ScreenCaptureKit
+#include <ScreenCaptureKit/ScreenCaptureKit.h>
+#else
+#cgo LDFLAGS: -framework CoreGraphics -framework CoreFoundation
+#endif
+#include <CoreGraphics/CoreGraphics.h>
+
+static CGImageRef capture(CGDirectDisplayID id, CGRect diIntersectDisplayLocal, CGColorSpaceRef colorSpace) {
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ > MAC_OS_VERSION_14_4
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    __block CGImageRef result = nil;
+    [SCShareableContent getShareableContentWithCompletionHandler:^(SCShareableContent* content, NSError* error) {
+        @autoreleasepool {
+            if (error) {
+                dispatch_semaphore_signal(semaphore);
+                return;
+            }
+            SCDisplay* target = nil;
+            for (SCDisplay *display in content.displays) {
+                if (display.displayID == id) {
+                    target = display;
+                    break;
+                }
+            }
+            if (!target) {
+                dispatch_semaphore_signal(semaphore);
+                return;
+            }
+            SCContentFilter* filter = [[SCContentFilter alloc] initWithDisplay:target excludingWindows:@[]];
+            SCStreamConfiguration* config = [[SCStreamConfiguration alloc] init];
+            config.sourceRect = diIntersectDisplayLocal;
+            config.width = diIntersectDisplayLocal.size.width;
+            config.height = diIntersectDisplayLocal.size.height;
+            [SCScreenshotManager captureImageWithFilter:filter
+                                          configuration:config
+                                      completionHandler:^(CGImageRef img, NSError* error) {
+                if (!error) {
+                    result = CGImageCreateCopyWithColorSpace(img, colorSpace);
+                }
+                dispatch_semaphore_signal(semaphore);
+            }];
+        }
+    }];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    dispatch_release(semaphore);
+    return result;
+#else
+    CGImageRef img = CGDisplayCreateImageForRect(id, diIntersectDisplayLocal);
+    if (!img) {
+        return nil;
+    }
+    CGImageRef copy = CGImageCreateCopyWithColorSpace(img, colorSpace);
+    CGImageRelease(img);
+    if (!copy) {
+        return nil;
+    }
+    return copy;
+#endif
+}
+*/
 import "C"
 
 import (
 	"errors"
 	"image"
 	"unsafe"
-
-	"github.com/kbinani/screenshot/internal/util"
 )
 
 func Capture(x, y, width, height int) (*image.RGBA, error) {
@@ -20,7 +79,7 @@ func Capture(x, y, width, height int) (*image.RGBA, error) {
 	}
 
 	rect := image.Rect(0, 0, width, height)
-	img, err := util.CreateImage(rect)
+	img, err := createImage(rect)
 	if err != nil {
 		return nil, err
 	}
@@ -38,12 +97,12 @@ func Capture(x, y, width, height int) (*image.RGBA, error) {
 	ids := activeDisplayList()
 
 	ctx := createBitmapContext(width, height, (*C.uint32_t)(unsafe.Pointer(&img.Pix[0])), img.Stride)
-	if ctx == nil {
+	if ctx == 0 {
 		return nil, errors.New("cannot create bitmap context")
 	}
 
 	colorSpace := createColorspace()
-	if colorSpace == nil {
+	if colorSpace == 0 {
 		return nil, errors.New("cannot create colorspace")
 	}
 	defer C.CGColorSpaceRelease(colorSpace)
@@ -69,15 +128,10 @@ func Capture(x, y, width, height int) (*image.RGBA, error) {
 		diIntersectDisplayLocal := C.CGRectMake(cgIntersect.origin.x-cgBounds.origin.x,
 			cgBounds.origin.y+cgBounds.size.height-(cgIntersect.origin.y+cgIntersect.size.height),
 			cgIntersect.size.width, cgIntersect.size.height)
-		captured := C.CGDisplayCreateImageForRect(id, diIntersectDisplayLocal)
-		if captured == nil {
-			return nil, errors.New("cannot capture display")
-		}
-		defer C.CGImageRelease(captured)
 
-		image := C.CGImageCreateCopyWithColorSpace(captured, colorSpace)
-		if image == nil {
-			return nil, errors.New("failed copying captured image")
+		image := C.capture(id, diIntersectDisplayLocal, colorSpace)
+		if unsafe.Pointer(image) == nil {
+			return nil, errors.New("cannot capture display")
 		}
 		defer C.CGImageRelease(image)
 
@@ -168,8 +222,8 @@ func getCoreGraphicsCoordinateFromWindowsCoordinate(p C.CGPoint, mainDisplayBoun
 
 func createBitmapContext(width int, height int, data *C.uint32_t, bytesPerRow int) C.CGContextRef {
 	colorSpace := createColorspace()
-	if colorSpace == nil {
-		return nil
+	if colorSpace == 0 {
+		return 0
 	}
 	defer C.CGColorSpaceRelease(colorSpace)
 
@@ -189,7 +243,7 @@ func createColorspace() C.CGColorSpaceRef {
 func activeDisplayList() []C.CGDirectDisplayID {
 	count := C.uint32_t(NumActiveDisplays())
 	ret := make([]C.CGDirectDisplayID, count)
-	if C.CGGetActiveDisplayList(count, (*C.CGDirectDisplayID)(unsafe.Pointer(&ret[0])), nil) == C.kCGErrorSuccess {
+	if count > 0 && C.CGGetActiveDisplayList(count, (*C.CGDirectDisplayID)(unsafe.Pointer(&ret[0])), nil) == C.kCGErrorSuccess {
 		return ret
 	} else {
 		return make([]C.CGDirectDisplayID, 0)

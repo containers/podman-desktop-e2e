@@ -1,19 +1,19 @@
-package xwindow
+//go:build !s390x && !ppc64le && !darwin && !windows && (linux || freebsd || openbsd || netbsd)
+
+package screenshot
 
 import (
 	"fmt"
-	"image"
-	"image/color"
-
 	"github.com/gen2brain/shm"
 	"github.com/jezek/xgb"
 	mshm "github.com/jezek/xgb/shm"
 	"github.com/jezek/xgb/xinerama"
 	"github.com/jezek/xgb/xproto"
-	"github.com/kbinani/screenshot/internal/util"
+	"image"
+	"image/color"
 )
 
-func Capture(x, y, width, height int) (img *image.RGBA, e error) {
+func captureXinerama(x, y, width, height int) (img *image.RGBA, e error) {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -53,7 +53,7 @@ func Capture(x, y, width, height int) (img *image.RGBA, e error) {
 	intersect := wholeScreenBounds.Intersect(targetBounds)
 
 	rect := image.Rect(0, 0, width, height)
-	img, err = util.CreateImage(rect)
+	img, err = createImage(rect)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +92,12 @@ func Capture(x, y, width, height int) (img *image.RGBA, e error) {
 			mshm.Attach(c, seg, uint32(shmId), false)
 
 			defer mshm.Detach(c, seg)
-			defer shm.Rm(shmId)
-			defer shm.Dt(data)
+			defer func() {
+				_ = shm.Rm(shmId)
+			}()
+			defer func() {
+				_ = shm.Dt(data)
+			}()
 
 			_, err = mshm.GetImage(c, xproto.Drawable(screen.Root),
 				int16(intersect.Min.X), int16(intersect.Min.Y),
@@ -127,73 +131,4 @@ func Capture(x, y, width, height int) (img *image.RGBA, e error) {
 	}
 
 	return img, e
-}
-
-func NumActiveDisplays() (num int) {
-	defer func() {
-		e := recover()
-		if e != nil {
-			num = 0
-		}
-	}()
-
-	c, err := xgb.NewConn()
-	if err != nil {
-		return 0
-	}
-	defer c.Close()
-
-	err = xinerama.Init(c)
-	if err != nil {
-		return 0
-	}
-
-	reply, err := xinerama.QueryScreens(c).Reply()
-	if err != nil {
-		return 0
-	}
-
-	num = int(reply.Number)
-	return num
-}
-
-func GetDisplayBounds(displayIndex int) (rect image.Rectangle) {
-	defer func() {
-		e := recover()
-		if e != nil {
-			rect = image.ZR
-		}
-	}()
-
-	c, err := xgb.NewConn()
-	if err != nil {
-		return image.ZR
-	}
-	defer c.Close()
-
-	err = xinerama.Init(c)
-	if err != nil {
-		return image.ZR
-	}
-
-	reply, err := xinerama.QueryScreens(c).Reply()
-	if err != nil {
-		return image.ZR
-	}
-
-	if displayIndex >= int(reply.Number) {
-		return image.ZR
-	}
-
-	primary := reply.ScreenInfo[0]
-	x0 := int(primary.XOrg)
-	y0 := int(primary.YOrg)
-
-	screen := reply.ScreenInfo[displayIndex]
-	x := int(screen.XOrg) - x0
-	y := int(screen.YOrg) - y0
-	w := int(screen.Width)
-	h := int(screen.Height)
-	rect = image.Rect(x, y, x+w, y+h)
-	return rect
 }
