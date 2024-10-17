@@ -1,5 +1,5 @@
-# github.com/adrianriobo/goax v0.1.1
-## explicit; go 1.19
+# github.com/adrianriobo/goax v0.1.2
+## explicit; go 1.22.0
 github.com/adrianriobo/goax/pkg/goax/app
 github.com/adrianriobo/goax/pkg/goax/app/api
 github.com/adrianriobo/goax/pkg/goax/axapp
@@ -20,8 +20,8 @@ github.com/adrianriobo/goax/pkg/util
 github.com/adrianriobo/goax/pkg/util/delay
 github.com/adrianriobo/goax/pkg/util/logging
 github.com/adrianriobo/goax/pkg/util/screenshot
-# github.com/gen2brain/shm v0.0.0-20200228170931-49f9650110c5
-## explicit
+# github.com/gen2brain/shm v0.1.0
+## explicit; go 1.21
 github.com/gen2brain/shm
 # github.com/go-logr/logr v1.4.1
 ## explicit; go 1.18
@@ -30,11 +30,12 @@ github.com/go-logr/logr/funcr
 # github.com/go-ole/go-ole v1.3.0
 ## explicit; go 1.12
 github.com/go-ole/go-ole
-# github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572
-## explicit; go 1.13
 # github.com/go-task/slim-sprig/v3 v3.0.0
 ## explicit; go 1.20
 github.com/go-task/slim-sprig/v3
+# github.com/godbus/dbus/v5 v5.1.0
+## explicit; go 1.12
+github.com/godbus/dbus/v5
 # github.com/google/go-cmp v0.6.0
 ## explicit; go 1.13
 github.com/google/go-cmp/cmp
@@ -45,17 +46,15 @@ github.com/google/go-cmp/cmp/internal/value
 # github.com/google/pprof v0.0.0-20240424215950-a892ee059fd6
 ## explicit; go 1.19
 github.com/google/pprof/profile
-# github.com/jezek/xgb v0.0.0-20210312150743-0e0f116e1240
-## explicit
+# github.com/jezek/xgb v1.1.1
+## explicit; go 1.11
 github.com/jezek/xgb
 github.com/jezek/xgb/shm
 github.com/jezek/xgb/xinerama
 github.com/jezek/xgb/xproto
-# github.com/kbinani/screenshot v0.0.0-20210720154843-7d3a670d8329
-## explicit; go 1.16
+# github.com/kbinani/screenshot v0.0.0-20240820160931-a8a2c5d0e191
+## explicit; go 1.21
 github.com/kbinani/screenshot
-github.com/kbinani/screenshot/internal/util
-github.com/kbinani/screenshot/internal/xwindow
 # github.com/lxn/win v0.0.0-20210218163916-a377121e959e
 ## explicit; go 1.12
 github.com/lxn/win
@@ -102,22 +101,22 @@ github.com/sirupsen/logrus
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
-# golang.org/x/exp v0.0.0-20240222234643-814bf88cf225
-## explicit; go 1.20
+# golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c
+## explicit; go 1.22.0
 golang.org/x/exp/constraints
 golang.org/x/exp/maps
 golang.org/x/exp/slices
-# golang.org/x/net v0.25.0
+# golang.org/x/net v0.30.0
 ## explicit; go 1.18
 golang.org/x/net/context
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
-# golang.org/x/sys v0.20.0
+# golang.org/x/sys v0.26.0
 ## explicit; go 1.18
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.15.0
+# golang.org/x/text v0.19.0
 ## explicit; go 1.18
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
@@ -136,8 +135,8 @@ golang.org/x/text/internal/utf8internal
 golang.org/x/text/language
 golang.org/x/text/runes
 golang.org/x/text/transform
-# golang.org/x/tools v0.21.0
-## explicit; go 1.19
+# golang.org/x/tools v0.26.0
+## explicit; go 1.22.0
 golang.org/x/tools/cover
 golang.org/x/tools/go/ast/inspector
 # gopkg.in/yaml.v3 v3.0.1
