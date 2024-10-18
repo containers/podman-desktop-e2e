@@ -1,4 +1,4 @@
-name: Podman Desktop E2E with Podman Nightly
+name: Podman Desktop E2E with Podman Nightly HyperV
 
 on:
   schedule:
@@ -26,8 +26,8 @@ on:
         type: 'string'
         required: true
       podman_remote_url:
-        default: 'https://api.cirrus-ci.com/v1/artifact/github/containers/podman/Artifacts/binary/podman-remote-release-windows_amd64.zip'
-        description: 'podman remote zip'
+        default: 'https://github.com/containers/podman/releases/download/v5.2.4/podman-5.2.4-setup.exe'
+        description: 'podman latest version exe'
         type: string
         required: true
       images_version:
@@ -36,11 +36,9 @@ on:
         type: 'string'
         required: true
       podman_provider:
-        type: choice
-        description: 'Podman virtualization provider, default is wsl, alternative hyperv'
-        options:
-        - wsl
-        - hyperv
+        default: 'hyperv'
+        description: 'Podman virtualization provider'
+        type: 'string'
         required: true
 
 jobs:
@@ -69,9 +67,9 @@ jobs:
         DEFAULT_FORK: 'containers'
         DEFAULT_BRANCH: 'main'
         DEFAULT_NPM_TARGET: 'test:e2e'
-        DEFAULT_PODMAN_PROVIDER: 'wsl'
+        DEFAULT_PODMAN_PROVIDER: 'hyperv'
         DEFAULT_ENV_VARS: 'TEST_PODMAN_MACHINE=true'
-        DEFAULT_URL: 'https://api.cirrus-ci.com/v1/artifact/github/containers/podman/Artifacts/binary/podman-remote-release-windows_amd64.zip'
+        DEFAULT_URL: 'https://github.com/containers/podman/releases/download/v5.2.4/podman-5.2.4-setup.exe'
         DEFAULT_IMAGES_VERSIONS: 'BUILDER="v0.0.2",PODMAN="v0.0.2",RUNNER="v0.0.2"'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
@@ -168,7 +166,7 @@ jobs:
               -initialize 0 \
               -rootful 0 \
               -start 0 \
-              -installWSL 0
+              -podmanProvider ${{ env.PODMAN_PROVIDER }}
         # check logs
         podman logs -f pde2e-podman-run
 
@@ -238,5 +236,3 @@ jobs:
         name: results-e2e-${{ matrix.windows-version }}${{ matrix.windows-featurepack }}
         path: |
           results/*
-
-
