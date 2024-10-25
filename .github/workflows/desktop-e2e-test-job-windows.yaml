@@ -25,8 +25,8 @@ on:
         type: string
         required: true
       podman_remote_url:
-        default: 'https://github.com/containers/podman/releases/download/v5.2.0/podman-remote-release-windows_amd64.zip'
-        description: 'podman remote zip'
+        default: 'https://github.com/containers/podman/releases/download/v5.2.4/podman-5.2.4-setup.exe'
+        description: 'podman latest version exe'
         type: string
         required: true
       podman_options:
