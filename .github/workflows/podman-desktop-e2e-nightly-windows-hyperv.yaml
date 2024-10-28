@@ -26,7 +26,7 @@ on:
         type: 'string'
         required: true
       podman_remote_url:
-        default: 'https://github.com/containers/podman/releases/download/v5.2.4/podman-5.2.4-setup.exe'
+        default: 'https://github.com/containers/podman/releases/download/v5.2.5/podman-5.2.5-setup.exe'
         description: 'podman latest version exe'
         type: string
         required: true
@@ -69,7 +69,7 @@ jobs:
         DEFAULT_NPM_TARGET: 'test:e2e'
         DEFAULT_PODMAN_PROVIDER: 'hyperv'
         DEFAULT_ENV_VARS: 'TEST_PODMAN_MACHINE=true'
-        DEFAULT_URL: 'https://github.com/containers/podman/releases/download/v5.2.4/podman-5.2.4-setup.exe'
+        DEFAULT_URL: 'https://github.com/containers/podman/releases/download/v5.2.5/podman-5.2.5-setup.exe'
         DEFAULT_IMAGES_VERSIONS: 'BUILDER="v0.0.2",PODMAN="v0.0.2",RUNNER="v0.0.2"'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
