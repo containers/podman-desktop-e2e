@@ -54,6 +54,7 @@ on:
 jobs:
   windows:
     name: ${{ matrix.windows-version }} - Debug
+    timeout-minutes: 120
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -180,7 +181,6 @@ jobs:
         podman logs -f pde2e-podman-run
 
     - name: Run Podman Desktop Playwright E2E tests
-      timeout-minutes: 60
       env:
         PODMANDESKTOP_CI_BOT_TOKEN: ${{ secrets.PODMANDESKTOP_CI_BOT_TOKEN }}
       run: |
