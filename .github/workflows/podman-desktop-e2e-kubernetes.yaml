@@ -26,8 +26,8 @@ on:
         type: 'string'
         required: true
       podman_remote_url:
-        default: 'https://api.cirrus-ci.com/v1/artifact/github/containers/podman/Artifacts/binary/podman-remote-release-windows_amd64.zip'
-        description: 'podman remote zip'
+        default: 'https://github.com/containers/podman/releases/download/v5.3.1/podman-5.3.1-setup.exe'
+        description: 'podman latest version exe'
         type: string
         required: true
       images_version:
@@ -65,13 +65,20 @@ jobs:
           windows-featurepack: '22h2-ent'
 
     steps:
+    - name: Get Podman version used by Desktop
+      run: |
+        version=$(curl https://raw.githubusercontent.com/containers/podman-desktop/main/extensions/podman/packages/extension/src/podman5.json | jq -r '.version')
+        echo "Default Podman Version from Podman Desktop: ${version}"
+        echo "PD_PODMAN_VERSION=${version}" >> $GITHUB_ENV
+
     - name: Set the default env. variables
       env:
         DEFAULT_FORK: 'containers'
         DEFAULT_BRANCH: 'main'
         DEFAULT_NPM_TARGET: 'test:e2e:k8s'
         DEFAULT_ENV_VARS: 'TEST_PODMAN_MACHINE=true'
-        DEFAULT_URL: 'https://api.cirrus-ci.com/v1/artifact/github/containers/podman/Artifacts/binary/podman-remote-release-windows_amd64.zip'
+        DEFAULT_VERSION: "${{ env.PD_PODMAN_VERSION || '5.3.1' }}"
+        DEFAULT_URL: 'https://github.com/containers/podman/releases/download/v$DEFAULT_VERSION/podman-$DEFAULT_VERSION-setup.exe'
         DEFAULT_IMAGES_VERSIONS: 'BUILDER="v0.0.2",PODMAN="v0.0.2",RUNNER="v0.0.2"'
       run: |
         echo "FORK=${{ github.event.inputs.fork || env.DEFAULT_FORK }}" >> $GITHUB_ENV
