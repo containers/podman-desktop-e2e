@@ -2,7 +2,7 @@ name: Podman Desktop Kubernetes E2E with Podman Nightly
 
 on:
   schedule:
-    - cron:  '0 2 * * 2,4'
+    - cron:  '0 0 * * 1,4'
   workflow_dispatch:
     inputs:
       fork:
@@ -21,7 +21,7 @@ on:
         type: string
         required: true
       env_vars:
-        default: 'TEST_PODMAN_MACHINE=true'
+        default: 'TEST_PODMAN_MACHINE=false'
         description: 'Env. Variables passed into target machine, ie: VAR1=xxx,VAR2=true,VAR3=15,VAR4="Pass me along"'
         type: 'string'
         required: true
@@ -56,11 +56,11 @@ jobs:
       fail-fast: false
       matrix:
         windows-version: ['10','11']
-        windows-featurepack: ['22h2-ent', '23h2-ent']
+        windows-featurepack: ['22h2-ent', '24h2-ent']
         podman-provider: ['wsl', 'hyperv']
         exclude:
         - windows-version: '10'
-          windows-featurepack: '23h2-ent'
+          windows-featurepack: '24h2-ent'
         - windows-version: '11'
           windows-featurepack: '22h2-ent'
 
@@ -76,7 +76,7 @@ jobs:
         DEFAULT_FORK: 'containers'
         DEFAULT_BRANCH: 'main'
         DEFAULT_NPM_TARGET: 'test:e2e:k8s'
-        DEFAULT_ENV_VARS: 'TEST_PODMAN_MACHINE=true'
+        DEFAULT_ENV_VARS: 'TEST_PODMAN_MACHINE=false'
         DEFAULT_VERSION: "${{ env.PD_PODMAN_VERSION || '5.3.1' }}"
         DEFAULT_URL: 'https://github.com/containers/podman/releases/download/v$DEFAULT_VERSION/podman-$DEFAULT_VERSION-setup.exe'
         DEFAULT_IMAGES_VERSIONS: 'BUILDER="v0.0.2",PODMAN="v0.0.2",RUNNER="v0.0.2"'
@@ -133,27 +133,6 @@ jobs:
         podman wait --condition running x-session
         # Check logs for the x session
         podman logs x-session
-
-    - name: Setup dependencies and build Podman Desktop locally
-      run: |
-        podman run -d --name pde2e-builder-run \
-          -e TARGET_HOST=$(cat host) \
-          -e TARGET_HOST_USERNAME=$(cat username) \
-          -e TARGET_HOST_KEY_PATH=/data/id_rsa \
-          -e TARGET_FOLDER=pd-e2e \
-          -e TARGET_CLEANUP=false \
-          -e TARGET_RESULTS=results \
-          -e OUTPUT_FOLDER=/data \
-          -e DEBUG=true \
-          -v $PWD:/data:z \
-          quay.io/odockal/pde2e-builder:${{ env.PDE2E_BUILDER }}-windows  \
-              pd-e2e/builder.ps1 \
-                -targetFolder pd-e2e \
-                -resultsFolder results \
-                -fork ${{ env.FORK }} \
-                -branch ${{ env.BRANCH }}
-        # check logs
-        podman logs -f pde2e-builder-run
 
     - name: Download Podman nightly, do not initialize and start
       run: |
