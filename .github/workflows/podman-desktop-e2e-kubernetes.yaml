@@ -1,4 +1,4 @@
-name: Podman Desktop Kubernetes E2E with Podman Nightly
+name: Podman Desktop Kubernetes E2E with Podman Latest
 
 on:
   schedule:
@@ -134,7 +134,7 @@ jobs:
         # Check logs for the x session
         podman logs x-session
 
-    - name: Download Podman nightly, do not initialize and start
+    - name: Download Podman latest, do not initialize and start
       run: |
         podman run --rm -d --name pde2e-podman-run \
           -e TARGET_HOST=$(cat host) \
