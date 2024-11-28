@@ -1,4 +1,4 @@
-name: Podman Desktop E2E with Podman Nightly HyperV
+name: Podman Desktop E2E with Podman Latest HyperV
 
 on:
   schedule:
@@ -154,7 +154,7 @@ jobs:
         # check logs
         podman logs -f pde2e-builder-run
 
-    - name: Download Podman nightly, do not initialize and start
+    - name: Download Podman latest, do not initialize and start
       run: |
         podman run --rm -d --name pde2e-podman-run \
           -e TARGET_HOST=$(cat host) \
