@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       fork:
-        default: 'containers'
+        default: 'podman-desktop'
         description: 'Podman Desktop repo fork'
         type: string
         required: true
@@ -71,7 +71,7 @@ jobs:
     steps:
     - name: Set the default env. variables
       env:
-        DEFAULT_FORK: 'containers'
+        DEFAULT_FORK: 'podman-desktop'
         DEFAULT_BRANCH: 'main'
         DEFAULT_NPM_TARGET: 'test:e2e'
         DEFAULT_PODMAN_PROVIDER: 'wsl'

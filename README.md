@@ -1,6 +1,6 @@
 # podman-desktop-e2e
 
-This project define a set of e2e tests around [podman desktop](https://github.com/containers/podman-desktop), this is a complementary set of e2e tests for those user stories which requires interaction beyond the podman desktop app itself with some third party apps (i.e installers from extensions).
+This project define a set of e2e tests around [podman desktop](https://github.com/podman-desktop/podman-desktop), this is a complementary set of e2e tests for those user stories which requires interaction beyond the podman desktop app itself with some third party apps (i.e installers from extensions).
 
 ## Overview
 
