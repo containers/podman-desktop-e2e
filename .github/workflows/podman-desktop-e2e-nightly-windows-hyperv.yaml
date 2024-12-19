@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       fork:
-        default: 'containers'
+        default: 'podman-desktop'
         description: 'Podman Desktop repo fork'
         type: string
         required: true
@@ -65,13 +65,13 @@ jobs:
     steps:
     - name: Get Podman version used by Desktop
       run: |
-        version=$(curl https://raw.githubusercontent.com/containers/podman-desktop/main/extensions/podman/packages/extension/src/podman5.json | jq -r '.version')
+        version=$(curl https://raw.githubusercontent.com/podman-desktop/podman-desktop/main/extensions/podman/packages/extension/src/podman5.json | jq -r '.version')
         echo "Default Podman Version from Podman Desktop: ${version}"
         echo "PD_PODMAN_VERSION=${version}" >> $GITHUB_ENV
 
     - name: Set the default env. variables
       env:
-        DEFAULT_FORK: 'containers'
+        DEFAULT_FORK: 'podman-desktop'
         DEFAULT_BRANCH: 'main'
         DEFAULT_NPM_TARGET: 'test:e2e'
         DEFAULT_PODMAN_PROVIDER: 'hyperv'
